@@ -33,4 +33,9 @@ public class UserProvider: IUserProvider<User>
 
         return user;
     }
+
+    public async Task<User> AddUserAsync(User user)
+    {
+        return await _userRepository.CreateAsync(user);
+    }
 }
