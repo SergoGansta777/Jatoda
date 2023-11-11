@@ -1,4 +1,6 @@
 using JatodaBackendApi.Model;
+using JatodaBackendApi.Repositories;
+using JatodaBackendApi.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,11 @@ builder.Services.AddDbContext<JatodaContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddScoped<IRepository<Todonote>, ToDoRepository>();
+builder.Services.AddScoped<IRepository<User>, UserRepository>();
+builder.Services.AddScoped<IRepository<Tag>, TagRepository>();
+builder.Services.AddSingleton<ICacheRepository, CacheRepository>();
 
 var app = builder.Build();
 
