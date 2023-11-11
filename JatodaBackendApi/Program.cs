@@ -1,10 +1,15 @@
 using System.Text;
 using JatodaBackendApi.Model;
+using JatodaBackendApi.Providers;
+using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Repositories;
 using JatodaBackendApi.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
+using JatodaBackendApi.Services;
+using JatodaBackendApi.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 // TODO: Вынести все файлы настройки сервисов в отдельную директорию Services
@@ -14,16 +19,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Configuration.AddJsonFile("appsettings.json");
 
 builder.Services.AddDbContext<JatodaContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    var connectionString = builder.Configuration.GetConnectionString("JatodaConnection");
+    options.UseNpgsql(connectionString);
 });
 
 builder.Services.AddScoped<IRepository<Todonote>, ToDoRepository>();
 builder.Services.AddScoped<IRepository<User>, UserRepository>();
 builder.Services.AddScoped<IRepository<Tag>, TagRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ITodoProvider<Todonote>, TodoProvider>();
+builder.Services.AddScoped<IUserProvider<User>, UserProvider>();
 builder.Services.AddSingleton<ICacheRepository, CacheRepository>();
+
+var cacheConnectionString = builder.Configuration.GetConnectionString("CacheConnection");
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(cacheConnectionString));
 
 builder.Services.AddAuthentication(
     options =>
@@ -41,8 +54,6 @@ builder.Services.AddAuthentication(
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey =
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
 

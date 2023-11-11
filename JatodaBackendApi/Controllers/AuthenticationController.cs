@@ -11,12 +11,12 @@ namespace JatodaBackendApi.Controllers;
 [Route("api/[controller]")]
 public class AuthenticationController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly ILogger<AuthenticationController> _logger;
     private readonly ITokenService _tokenService;
     private readonly IUserProvider<User> _userProvider;
 
     public AuthenticationController(IUserProvider<User> userProvider, ITokenService tokenService,
-        ILogger<WeatherForecastController> logger)
+        ILogger<AuthenticationController> logger)
     {
         _userProvider = userProvider;
         _tokenService = tokenService;
