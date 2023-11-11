@@ -1,10 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using JatodaBackendApi.Model;
 using JatodaBackendApi.Providers.Interfaces;
-using JatodaBackendApi.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JatodaBackendApi.Controllers;
 
@@ -33,14 +29,11 @@ public class ToDoController : ControllerBase
     public async Task<IActionResult> GetById(int id)
     {
         var todo = await _todoProvider.GetTodoByIdAsync(id);
-        if (todo == null)
-        {
-            return NotFound();
-        }
+        if (todo == null) return NotFound();
 
         return Ok(todo);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] Todonote todo)
     {
@@ -52,10 +45,7 @@ public class ToDoController : ControllerBase
     public async Task<IActionResult> Update(Todonote todo)
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(todo.Id);
-        if (existingTodo == null)
-        {
-            return NotFound();
-        }
+        if (existingTodo == null) return NotFound();
         existingTodo.Name = todo.Name;
         existingTodo.Notes = todo.Notes;
         existingTodo.Tags = todo.Tags;
@@ -69,13 +59,9 @@ public class ToDoController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
-        if (existingTodo == null)
-        {
-            return NotFound();
-        }
+        if (existingTodo == null) return NotFound();
 
         await _todoProvider.DeleteTodoAsync(existingTodo);
         return NoContent();
     }
-
 }

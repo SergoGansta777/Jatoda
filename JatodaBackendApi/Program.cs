@@ -1,15 +1,14 @@
-using System.Text;
 using JatodaBackendApi.Model;
 using JatodaBackendApi.Providers;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Repositories;
 using JatodaBackendApi.Repositories.Interfaces;
+using JatodaBackendApi.Services;
+using JatodaBackendApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
-using JatodaBackendApi.Services;
-using JatodaBackendApi.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 // TODO: Вынести все файлы настройки сервисов в отдельную директорию Services
@@ -53,7 +52,7 @@ builder.Services.AddAuthentication(
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Issuer"]
     };
 });
 
