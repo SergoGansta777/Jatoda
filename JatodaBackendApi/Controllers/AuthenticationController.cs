@@ -1,79 +1,75 @@
-using System.Security.Cryptography;
-using System.Text;
 using JatodaBackendApi.Model;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using BCryptNet = BCrypt.Net.BCrypt;
 
-namespace JatodaBackendApi.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class AuthenticationController : ControllerBase
+namespace JatodaBackendApi.Controllers
 {
-    private readonly ILogger<AuthenticationController> _logger;
-    private readonly ITokenService _tokenService;
-    private readonly IUserProvider<User> _userProvider;
-
-    public AuthenticationController(IUserProvider<User> userProvider, ITokenService tokenService,
-        ILogger<AuthenticationController> logger)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AuthenticationController : ControllerBase
     {
-        _userProvider = userProvider;
-        _tokenService = tokenService;
-        _logger = logger;
-    }
+        private readonly ILogger<AuthenticationController> _logger;
+        private readonly ITokenService _tokenService;
+        private readonly IUserProvider<User> _userProvider;
 
-    [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest model)
-    {
-        var user = await _userProvider.GetByUsernameAsync(model.Username);
-        if (user == null) return Unauthorized();
-
-        if (!VerifyPasswordHash(model.Password, user.Passwordhash, user.Passwordsalt)) return Unauthorized();
-
-        var token = _tokenService.GenerateToken(user.Id.ToString(), user.Username);
-        return Ok(new
+        public AuthenticationController(IUserProvider<User> userProvider, ITokenService tokenService,
+            ILogger<AuthenticationController> logger)
         {
-            Token = token
-        });
-    }
+            _userProvider = userProvider;
+            _tokenService = tokenService;
+            _logger = logger;
+        }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest model)
-    {
-        if (await _userProvider.GetByUsernameAsync(model.Username) != null)
-            return BadRequest("Username is already taken");
-
-        var (passwordHash, passwordSalt) = CreatePasswordHash(model.Password);
-        var user = new User
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginRequest? model)
         {
-            Username = model.Username,
-            Passwordhash = passwordHash!,
-            Passwordsalt = passwordSalt!
-        };
+            if (model == null)
+            {
+                return BadRequest("Invalid payload.");
+            }
 
-        await _userProvider.AddUserAsync(user);
-        return Ok();
-    }
+            var user = await _userProvider.GetByUsernameAsync(model.Username);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Passwordhash))
+            {
+                return Unauthorized();
+            }
 
-    private bool VerifyPasswordHash(string password, string storedHash, string storedSalt)
-    {
-        using var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(storedSalt));
-        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            var token = _tokenService.GenerateToken(user.Id.ToString(), user.Username);
+            return Ok(new
+            {
+                Token = token
+            });
+        }
 
-        for (var i = 0; i < computedHash.Length; i++)
-            if (computedHash[i] != storedHash[i])
-                return false;
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterRequest? model)
+        {
+            if (model == null)
+            {
+                return BadRequest("Invalid payload.");
+            }
 
-        return true;
-    }
+            if (await _userProvider.GetByUsernameAsync(model.Username) != null)
+            {
+                return BadRequest("Username is already taken");
+            }
 
-    private (string?, string?) CreatePasswordHash(string password)
-    {
-        using var hmac = new HMACSHA512();
-        var passwordSalt = hmac.Key;
-        var passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            // Check also for email
 
-        return (passwordHash.ToString(), passwordSalt.ToString());
+            
+            var passwordHash = BCryptNet.HashPassword(model.Password);
+            var user = new User
+            {
+                Username = model.Username,
+                Passwordhash = passwordHash,
+                Email = model.Email,
+                Passwordsalt = "test"
+            };
+
+            await _userProvider.AddUserAsync(user);
+            return Ok();
+        }
     }
 }

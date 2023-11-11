@@ -24,7 +24,11 @@ public class TodoProvider : ITodoProvider<Todonote>
     public async Task<Todonote?> GetTodoByIdAsync(int id)
     {
         var cacheKey = $"todo:{id}";
-        if (await _cache.IsExistsInCacheAsync(cacheKey)) return await _cache.GetFromCacheAsync<Todonote>(cacheKey);
+        if (await _cache.IsExistsInCacheAsync(cacheKey))
+        {
+            Console.WriteLine("Cache hit");
+            return await _cache.GetFromCacheAsync<Todonote>(cacheKey);
+        }
 
         var todo = await _todoRepository.GetByIdAsync(id);
         if (todo != null) await _cache.SetCacheAsync(cacheKey, todo, defaultTimeForCache);
