@@ -1,12 +1,13 @@
 using JatodaBackendApi.Model;
 using JatodaBackendApi.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+
 namespace JatodaBackendApi.Repositories;
 
 public class TagRepository : IRepository<Tag>
 {
     private readonly JatodaContext _context;
-    
+
     public TagRepository(JatodaContext context)
     {
         _context = context;
