@@ -4,6 +4,7 @@ using JatodaBackendApi.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Caching.Distributed;
 
 var builder = WebApplication.CreateBuilder(args);
 // TODO: Вынести все файлы настройки сервисов в отдельную директорию Services

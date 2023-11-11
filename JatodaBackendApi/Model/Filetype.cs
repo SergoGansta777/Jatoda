@@ -1,6 +1,9 @@
-﻿namespace JatodaBackendApi.Model;
+﻿using System;
+using System.Collections.Generic;
 
-public class Filetype
+namespace JatodaBackendApi.Model;
+
+public partial class Filetype
 {
     public int Id { get; set; }
 

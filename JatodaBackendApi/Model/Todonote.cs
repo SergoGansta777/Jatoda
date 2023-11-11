@@ -1,6 +1,9 @@
-﻿namespace JatodaBackendApi.Model;
+﻿using System;
+using System.Collections.Generic;
 
-public class Todonote
+namespace JatodaBackendApi.Model;
+
+public partial class Todonote
 {
     public int Id { get; set; }
 

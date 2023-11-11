@@ -1,6 +1,9 @@
-﻿namespace JatodaBackendApi.Model;
+﻿using System;
+using System.Collections.Generic;
 
-public class User
+namespace JatodaBackendApi.Model;
+
+public partial class User
 {
     public int Id { get; set; }
 
@@ -9,6 +12,8 @@ public class User
     public string Email { get; set; } = null!;
 
     public string Passwordhash { get; set; } = null!;
+
+    public string Passwordsalt { get; set; } = null!;
 
     public DateTime? Createdat { get; set; }
 
