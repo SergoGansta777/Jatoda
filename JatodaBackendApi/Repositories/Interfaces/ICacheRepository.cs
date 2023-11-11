@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-
 namespace JatodaBackendApi.Repositories.Interfaces;
 
 public interface ICacheRepository

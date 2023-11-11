@@ -1,6 +1,6 @@
 using JatodaBackendApi.Repositories.Interfaces;
-using StackExchange.Redis;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace JatodaBackendApi.Repositories;
 
@@ -16,12 +16,9 @@ public class CacheRepository : ICacheRepository
     public async Task<T> GetFromCacheAsync<T>(string key)
     {
         var serializedValue = await _database.StringGetAsync(key);
-        if (serializedValue.HasValue)
-        {
-            return Deserialize<T>(serializedValue);
-        }
+        if (serializedValue.HasValue) return Deserialize<T>(serializedValue);
 
-        return default(T);
+        return default;
     }
 
     public async Task SetCacheAsync<T>(string key, T value, TimeSpan expiration)
@@ -39,7 +36,7 @@ public class CacheRepository : ICacheRepository
     {
         return await _database.KeyExistsAsync(key);
     }
-    
+
     private T Deserialize<T>(RedisValue serializedValue)
     {
         return JsonConvert.DeserializeObject<T>(serializedValue);

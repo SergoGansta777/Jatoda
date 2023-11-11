@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace JatodaBackendApi.Model;
 
-namespace JatodaBackendApi.Model;
-
-public partial class User
+public class User
 {
     public int Id { get; set; }
 
