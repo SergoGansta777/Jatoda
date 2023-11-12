@@ -1,6 +1,7 @@
 using JatodaBackendApi.Model;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BCryptNet = BCrypt.Net.BCrypt;
 
@@ -31,7 +32,7 @@ namespace JatodaBackendApi.Controllers
             }
 
             var user = await _userProvider.GetByUsernameAsync(model.Username);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Passwordhash))
+            if (user == null || !BCryptNet.Verify(model.Password, user.Passwordhash))
             {
                 return Unauthorized();
             }
@@ -41,6 +42,15 @@ namespace JatodaBackendApi.Controllers
             {
                 Token = token
             });
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public IActionResult Logout()
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Split()[1]; 
+            _tokenService.RevokeToken(token);
+            return Ok();
         }
 
         [HttpPost("register")]
@@ -55,9 +65,10 @@ namespace JatodaBackendApi.Controllers
             {
                 return BadRequest("Username is already taken");
             }
-
-            // Check also for email
-
+            if (await _userProvider.GetByEmailAsync(model.Email) != null)
+            {
+                return BadRequest("Invalid email");
+            }
             
             var passwordHash = BCryptNet.HashPassword(model.Password);
             var user = new User
