@@ -6,7 +6,7 @@ namespace JatodaBackendApi.Providers;
 
 public class UserProvider : IUserProvider<User>
 {
-    private static readonly TimeSpan defaultTimeForCache = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan DefaultTimeForCache = TimeSpan.FromMinutes(5);
     private readonly ICacheRepository _cache;
     private readonly IRepository<User> _userRepository;
 
@@ -26,7 +26,7 @@ public class UserProvider : IUserProvider<User>
         var users = await _userRepository.GetAllAsync();
         var user = users.FirstOrDefault(u => u.Username == username);
         if (user != null)
-            await _cache.SetCacheAsync(cacheKey, user, defaultTimeForCache);
+            await _cache.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
 
         return user;
     }
@@ -41,7 +41,7 @@ public class UserProvider : IUserProvider<User>
         var users = await _userRepository.GetAllAsync();
         var user = users.FirstOrDefault(u => u.Email == email);
         if (user != null)
-            await _cache.SetCacheAsync(cacheKey, user, defaultTimeForCache);
+            await _cache.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
 
         return user;
     }
@@ -60,7 +60,7 @@ public class UserProvider : IUserProvider<User>
 
         var user = await _userRepository.GetByIdAsync(id);
         if (user != null)
-            await _cache.SetCacheAsync(cacheKey, user, defaultTimeForCache);
+            await _cache.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
 
         return user;
     }

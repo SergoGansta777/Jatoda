@@ -74,14 +74,14 @@ public class TokenService : ITokenService
 
         try
         {
-            var claimsPrincipal = tokenHandler.ValidateToken(
+            tokenHandler.ValidateToken(
                 token,
                 validationParameters,
                 out var validatedToken
             );
 
             if (
-                !(validatedToken is JwtSecurityToken jwtToken)
+                validatedToken is not JwtSecurityToken jwtToken
                 || !jwtToken.Header.Alg.Equals(
                     SecurityAlgorithms.HmacSha256,
                     StringComparison.InvariantCultureIgnoreCase

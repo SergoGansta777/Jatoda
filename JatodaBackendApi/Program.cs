@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container from the Startup class
 builder.Host.ConfigureServices(
-    (hostContext, services) => { Startup.ConfigureServices(hostContext, services); }
+    Startup.ConfigureServices
 );
 
 // Add configuration sources
