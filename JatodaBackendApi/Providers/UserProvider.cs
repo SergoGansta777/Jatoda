@@ -20,11 +20,13 @@ public class UserProvider : IUserProvider<User>
     {
         var cacheKey = $"user:{username}";
         var isUserCached = await _cache.IsExistsInCacheAsync(cacheKey);
-        if (isUserCached) return await _cache.GetFromCacheAsync<User>(cacheKey);
+        if (isUserCached)
+            return await _cache.GetFromCacheAsync<User>(cacheKey);
 
         var users = await _userRepository.GetAllAsync();
         var user = users.FirstOrDefault(u => u.Username == username);
-        if (user != null) await _cache.SetCacheAsync(cacheKey, user, defaultTimeForCache);
+        if (user != null)
+            await _cache.SetCacheAsync(cacheKey, user, defaultTimeForCache);
 
         return user;
     }
@@ -33,11 +35,13 @@ public class UserProvider : IUserProvider<User>
     {
         var cacheKey = $"user_email:{email}";
         var isUserCached = await _cache.IsExistsInCacheAsync(cacheKey);
-        if (isUserCached) return await _cache.GetFromCacheAsync<User>(cacheKey);
+        if (isUserCached)
+            return await _cache.GetFromCacheAsync<User>(cacheKey);
 
         var users = await _userRepository.GetAllAsync();
         var user = users.FirstOrDefault(u => u.Email == email);
-        if (user != null) await _cache.SetCacheAsync(cacheKey, user, defaultTimeForCache);
+        if (user != null)
+            await _cache.SetCacheAsync(cacheKey, user, defaultTimeForCache);
 
         return user;
     }
@@ -45,5 +49,19 @@ public class UserProvider : IUserProvider<User>
     public async Task<User> AddUserAsync(User user)
     {
         return await _userRepository.CreateAsync(user);
+    }
+
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        var cacheKey = $"user_id:{id}";
+        var isUserCached = await _cache.IsExistsInCacheAsync(cacheKey);
+        if (isUserCached)
+            return await _cache.GetFromCacheAsync<User>(cacheKey);
+
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user != null)
+            await _cache.SetCacheAsync(cacheKey, user, defaultTimeForCache);
+
+        return user;
     }
 }

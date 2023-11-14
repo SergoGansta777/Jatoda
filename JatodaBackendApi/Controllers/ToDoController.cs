@@ -7,7 +7,7 @@ namespace JatodaBackendApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(AuthenticationSchemes = "Bearer")]
+//[Authorize(AuthenticationSchemes = "Bearer")]
 public class ToDoController : ControllerBase
 {
     private readonly ILogger<AuthenticationController> _logger;

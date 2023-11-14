@@ -1,8 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using JatodaBackendApi.Repositories;
 using JatodaBackendApi.Services.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JatodaBackendApi.Services
@@ -20,44 +20,89 @@ namespace JatodaBackendApi.Services
 
         public string GenerateToken(string userId, string username)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:SecretKey"]);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            try
             {
-                Subject = new ClaimsIdentity(new[]
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var tokenExpiryTime = int.TryParse(
+                    _configuration["Jwt:TokenExpiry"],
+                    out var expiry
+                )
+                    ? expiry
+                    : 7;
+                var secretKey = _configuration["Jwt:SecretKey"];
+                if (string.IsNullOrEmpty(secretKey))
                 {
-                    new Claim(ClaimTypes.NameIdentifier, userId),
-                    new Claim(ClaimTypes.Name, username)
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials =
-                    new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+                    throw new InvalidOperationException("Secret key must be provided.");
+                }
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(
+                        new[]
+                        {
+                            new Claim(ClaimTypes.NameIdentifier, userId),
+                            new Claim(ClaimTypes.Name, username)
+                        }
+                    ),
+                    Expires = DateTime.UtcNow.AddDays(tokenExpiryTime),
+                    SigningCredentials = new SigningCredentials(
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                        SecurityAlgorithms.HmacSha256Signature
+                    )
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return string.Empty;
+            }
         }
 
-        public bool ValidateToken(string token)
+        public JwtSecurityToken ValidateToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:SecretKey"] ?? throw new InvalidOperationException());
+
+            if (!tokenHandler.CanReadToken(token))
+            {
+                throw new ArgumentException("Invalid JWT token format.");
+            }
 
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateLifetime = true,
-                ValidateIssuerSigningKey = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]))
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]!)
+                )
             };
+
             try
             {
-                var claimsPrincipal = tokenHandler.ValidateToken(token, validationParameters, out _);
-                return claimsPrincipal.Identity?.IsAuthenticated ?? false;
+                var claimsPrincipal = tokenHandler.ValidateToken(
+                    token,
+                    validationParameters,
+                    out var validatedToken
+                );
+
+                if (
+                    !(validatedToken is JwtSecurityToken jwtToken)
+                    || !jwtToken.Header.Alg.Equals(
+                        SecurityAlgorithms.HmacSha256,
+                        StringComparison.InvariantCultureIgnoreCase
+                    )
+                )
+                {
+                    throw new ArgumentException("Invalid JWT token encryption.");
+                }
+
+                return jwtToken;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                throw new SecurityTokenException("Token validation failed.", ex);
             }
         }
 

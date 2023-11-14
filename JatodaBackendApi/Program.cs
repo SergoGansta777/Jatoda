@@ -64,6 +64,14 @@ builder.Services.AddSingleton<ICacheRepository, CacheRepository>();
 var cacheConnectionString = builder.Configuration.GetConnectionString("CacheConnection");
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(cacheConnectionString));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin",
+        builder => builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 builder.Services.AddAuthentication(
     options =>
     {
@@ -96,6 +104,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.UseAuthentication();
+app.UseCors("AllowAllOrigins");
 
 app.MapControllers();
 
