@@ -1,32 +1,34 @@
 using JatodaBackendApi.Model;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Repositories.Interfaces;
+using JatodaBackendApi.Services.CacheService.Interfaces;
 
 namespace JatodaBackendApi.Providers;
 
 public class UserProvider : IUserProvider<User>
 {
     private static readonly TimeSpan DefaultTimeForCache = TimeSpan.FromMinutes(5);
-    private readonly ICacheRepository _cache;
+    private readonly ICacheService _cacheService;
     private readonly IRepository<User> _userRepository;
 
-    public UserProvider(ICacheRepository cache, IRepository<User> userRepository)
+    public UserProvider(ICacheService cacheService, IRepository<User> userRepository)
     {
-        _cache = cache;
+        _cacheService = cacheService;
         _userRepository = userRepository;
     }
 
     public async Task<User?> GetByUsernameAsync(string username)
     {
         var cacheKey = $"user:{username}";
-        var isUserCached = await _cache.IsExistsInCacheAsync(cacheKey);
-        if (isUserCached)
-            return await _cache.GetFromCacheAsync<User>(cacheKey);
+        var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
 
-        var users = await _userRepository.GetAllAsync();
-        var user = users.FirstOrDefault(u => u.Username == username);
-        if (user != null)
-            await _cache.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
+        if (user == null)
+        {
+            user = (await _userRepository.GetAllAsync()).FirstOrDefault(
+                u => u.Username == username
+            );
+            if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
+        }
 
         return user;
     }
@@ -34,33 +36,33 @@ public class UserProvider : IUserProvider<User>
     public async Task<User?> GetByEmailAsync(string email)
     {
         var cacheKey = $"user_email:{email}";
-        var isUserCached = await _cache.IsExistsInCacheAsync(cacheKey);
-        if (isUserCached)
-            return await _cache.GetFromCacheAsync<User>(cacheKey);
+        var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
 
-        var users = await _userRepository.GetAllAsync();
-        var user = users.FirstOrDefault(u => u.Email == email);
-        if (user != null)
-            await _cache.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
+        if (user == null)
+        {
+            user = (await _userRepository.GetAllAsync()).FirstOrDefault(u => u.Email == email);
+            if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
+        }
 
         return user;
     }
 
     public async Task<User> AddUserAsync(User user)
     {
-        return await _userRepository.CreateAsync(user);
+        await _userRepository.CreateAsync(user);
+        return user;
     }
 
     public async Task<User?> GetByIdAsync(int id)
     {
         var cacheKey = $"user_id:{id}";
-        var isUserCached = await _cache.IsExistsInCacheAsync(cacheKey);
-        if (isUserCached)
-            return await _cache.GetFromCacheAsync<User>(cacheKey);
+        var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
 
-        var user = await _userRepository.GetByIdAsync(id);
-        if (user != null)
-            await _cache.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
+        if (user == null)
+        {
+            user = await _userRepository.GetByIdAsync(id);
+            if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
+        }
 
         return user;
     }

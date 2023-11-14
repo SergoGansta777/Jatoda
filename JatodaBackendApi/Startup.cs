@@ -29,7 +29,7 @@ public static class Startup
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo {Title = "Your API", Version = "v1"});
 
             var securityScheme = new OpenApiSecurityScheme
             {
@@ -47,15 +47,12 @@ public static class Startup
             };
             c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
             c.AddSecurityRequirement(
-                new OpenApiSecurityRequirement { { securityScheme, Array.Empty<string>() } }
+                new OpenApiSecurityRequirement {{securityScheme, Array.Empty<string>()}}
             );
         });
 
         var connectionStringSql = configuration.GetConnectionString("DbConnection");
-        services.AddDbContext<JatodaContext>(options =>
-        {
-            options.UseNpgsql(connectionStringSql);
-        });
+        services.AddDbContext<JatodaContext>(options => { options.UseNpgsql(connectionStringSql); });
         var cacheConnectionString = configuration.GetConnectionString("CacheConnection");
         services.AddSingleton<IConnectionMultiplexer>(
             ConnectionMultiplexer.Connect(cacheConnectionString!)
@@ -113,9 +110,6 @@ public static class Startup
         app.UseAuthentication();
         app.UseCors("AllowAnyOrigin");
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }

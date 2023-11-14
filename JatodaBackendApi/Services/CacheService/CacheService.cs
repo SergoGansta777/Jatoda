@@ -19,7 +19,7 @@ public class CacheService : ICacheService
 
     public async Task SetCacheAsync<T>(string key, T value, TimeSpan expiration)
     {
-        await _cacheRepository.SetCacheAsync<T>(key, value, expiration);
+        await _cacheRepository.SetCacheAsync(key, value, expiration);
     }
 
     public async Task RemoveFromCacheAsync(string key)
