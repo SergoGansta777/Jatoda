@@ -59,17 +59,17 @@ public static class Startup
             ConnectionMultiplexer.Connect(cacheConnectionString!)
         );
 
+        services.AddSingleton<ICacheRepository, CacheRepository>();
+        services.AddSingleton<ICacheService, CacheService>();
+        services.AddSingleton<IMinioClient, MinioClient>();
+
         services.AddScoped<IRepository<Todonote>, ToDoRepository>();
         services.AddScoped<IRepository<User>, UserRepository>();
         services.AddScoped<IRepository<Tag>, TagRepository>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ITodoProvider<Todonote>, TodoProvider>();
         services.AddScoped<IUserProvider<User>, UserProvider>();
-        
-        
-        services.AddSingleton<ICacheRepository, CacheRepository>();
-        services.AddSingleton<ICacheService, CacheService>();
-        services.AddSingleton<IMinioClient, MinioClient>();
+        services.AddScoped<IFileProvider, FileProvider>();
 
         services.AddCors(options =>
         {

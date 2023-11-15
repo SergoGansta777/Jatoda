@@ -1,6 +1,5 @@
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Services.MinIoService.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace JatodaBackendApi.Providers;
 
