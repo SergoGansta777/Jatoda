@@ -128,7 +128,12 @@ public static class Startup
         app.UseRouting();
         app.UseAuthorization();
         app.UseAuthentication();
-        app.UseCors("AllowAnyOrigin");
+        app.UseCors(options => options
+            .WithOrigins(new[] {"http://localhost:3000", "http://localhost:8080", "http://localhost:4200"})
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+        );
 
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }

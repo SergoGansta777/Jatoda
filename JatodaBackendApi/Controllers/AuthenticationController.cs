@@ -55,9 +55,8 @@ public class AuthenticationController : ControllerBase
         return Ok(
             new
             {
-                message = "Login successful.",
+                message = "Login successful",
                 username = user.Username,
-                token
             }
         );
     }
@@ -66,15 +65,21 @@ public class AuthenticationController : ControllerBase
     [Authorize(AuthenticationSchemes = "Bearer")]
     public IActionResult Logout()
     {
-        var token = HttpContext.Request.Headers["Authorization"].ToString().Split()[1];
-        _tokenService.RevokeToken(token);
-        Response.Cookies.Delete("jwt");
+        if (Request.Cookies.TryGetValue("jwt", out string token))
+        {
+            _tokenService.RevokeToken(token);
+            Response.Cookies.Delete("jwt");
 
-        _logger.LogInformation("User logged out.");
+            _logger.LogInformation($"User with token {token} logged out.");
 
-        return Ok();
+            return Ok();
+        }
+        else
+        {
+            _logger.LogWarning("No jwt cookie found.");
+            return BadRequest("No jwt cookie found.");
+        }
     }
-
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest? model)
     {
