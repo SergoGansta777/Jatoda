@@ -1,5 +1,6 @@
 using System.Text;
 using JatodaBackendApi.Model;
+using JatodaBackendApi.Options;
 using JatodaBackendApi.Providers;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Repositories;
@@ -8,6 +9,8 @@ using JatodaBackendApi.Services;
 using JatodaBackendApi.Services.CacheService;
 using JatodaBackendApi.Services.CacheService.Interfaces;
 using JatodaBackendApi.Services.Interfaces;
+using JatodaBackendApi.Services.MinIoService;
+using JatodaBackendApi.Services.MinIoService.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -59,9 +62,9 @@ public static class Startup
             ConnectionMultiplexer.Connect(cacheConnectionString!)
         );
 
+        services.AddDistributedMemoryCache();
         services.AddSingleton<ICacheRepository, CacheRepository>();
         services.AddSingleton<ICacheService, CacheService>();
-        services.AddSingleton<IMinioClient, MinioClient>();
 
         services.AddScoped<IRepository<Todonote>, ToDoRepository>();
         services.AddScoped<IRepository<User>, UserRepository>();
@@ -69,7 +72,12 @@ public static class Startup
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ITodoProvider<Todonote>, TodoProvider>();
         services.AddScoped<IUserProvider<User>, UserProvider>();
+        services.AddScoped<IMinioService, MinioService>();
         services.AddScoped<IFileProvider, FileProvider>();
+        
+        services.AddSingleton<IMinioClient, MinioClient>();
+
+        services.Configure<MinioOptions>(configuration.GetSection("Minio"));
 
         services.AddCors(options =>
         {
@@ -92,10 +100,18 @@ public static class Startup
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
-                    ValidateIssuerSigningKey = false,
+                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]!)
                     )
+                };
+                options.Events = new JwtBearerEvents()
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["jwt"];
+                        return Task.CompletedTask;
+                    }
                 };
             });
     }

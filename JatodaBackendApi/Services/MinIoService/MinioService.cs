@@ -1,4 +1,6 @@
+using JatodaBackendApi.Options;
 using JatodaBackendApi.Services.MinIoService.Interfaces;
+using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 
@@ -8,8 +10,12 @@ public class MinioService : IMinioService
 {
     private readonly MinioClient? _minioClient;
 
-    public MinioService(string endpoint, string accessKey, string secretKey)
+    public MinioService(IOptions<MinioOptions> minioOptions)
     {
+        var endpoint = minioOptions.Value.Endpoint;
+        var accessKey = minioOptions.Value.AccessKey;
+        var secretKey = minioOptions.Value.SecretKey;
+
         _minioClient = (MinioClient?) new MinioClient().WithEndpoint(endpoint).WithCredentials(accessKey, secretKey)
             .Build();
     }

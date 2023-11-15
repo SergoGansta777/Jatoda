@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using JatodaBackendApi.Model;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Services.Interfaces;
@@ -62,7 +63,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("logout")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public IActionResult Logout()
     {
         var token = HttpContext.Request.Headers["Authorization"].ToString().Split()[1];
@@ -118,6 +119,26 @@ public class AuthenticationController : ControllerBase
             new {id = user.Id},
             createdUser
         );
+    }
+    
+    [HttpGet("user")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    public async Task<IActionResult> UserByToken()
+    {
+        try
+        {
+            var jwt = Request.Cookies["jwt"];
+            if (jwt == null) return Unauthorized();
+            var token = _tokenService.ValidateToken(jwt);
+            var userId = int.Parse(token.Payload.First(c =>c.Key == "nameid").Value.ToString()!);
+            var user = await _userProvider.GetByIdAsync(userId); 
+            return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while fetching user.");
+            return Unauthorized();
+        }
     }
 
     [HttpOptions]
