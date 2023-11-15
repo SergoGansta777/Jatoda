@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Minio;
 using StackExchange.Redis;
 
 namespace JatodaBackendApi;
@@ -64,8 +65,11 @@ public static class Startup
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ITodoProvider<Todonote>, TodoProvider>();
         services.AddScoped<IUserProvider<User>, UserProvider>();
+        
+        
         services.AddSingleton<ICacheRepository, CacheRepository>();
         services.AddSingleton<ICacheService, CacheService>();
+        services.AddSingleton<IMinioClient, MinioClient>();
 
         services.AddCors(options =>
         {
