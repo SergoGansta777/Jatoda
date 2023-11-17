@@ -1,5 +1,6 @@
 using System.Text;
-using JatodaBackendApi.Model;
+using JatodaBackendApi.Mappers;
+using JatodaBackendApi.Models;
 using JatodaBackendApi.Options;
 using JatodaBackendApi.Providers;
 using JatodaBackendApi.Providers.Interfaces;
@@ -8,6 +9,8 @@ using JatodaBackendApi.Repositories.Interfaces;
 using JatodaBackendApi.Services;
 using JatodaBackendApi.Services.CacheService;
 using JatodaBackendApi.Services.CacheService.Interfaces;
+using JatodaBackendApi.Services.CacheService.Repositories;
+using JatodaBackendApi.Services.CacheService.Repositories.Interfaces;
 using JatodaBackendApi.Services.Interfaces;
 using JatodaBackendApi.Services.MinIoService;
 using JatodaBackendApi.Services.MinIoService.Interfaces;
@@ -114,6 +117,8 @@ public static class Startup
                     }
                 };
             });
+
+        services.AddAutoMapper(typeof(TodonoteToTodonoteViewModel));
     }
 
     public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)

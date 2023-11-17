@@ -1,4 +1,4 @@
-using JatodaBackendApi.Model;
+using JatodaBackendApi.Models;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Repositories.Interfaces;
 using JatodaBackendApi.Services.CacheService.Interfaces;
@@ -58,11 +58,9 @@ public class UserProvider : IUserProvider<User>
         var cacheKey = $"user_id:{id}";
         var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
 
-        if (user == null)
-        {
-            user = await _userRepository.GetByIdAsync(id);
-            if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
-        }
+        if (user != null) return user;
+        user = await _userRepository.GetByIdAsync(id);
+        if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
 
         return user;
     }

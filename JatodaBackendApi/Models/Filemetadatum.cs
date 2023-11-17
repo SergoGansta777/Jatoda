@@ -1,6 +1,9 @@
-﻿namespace JatodaBackendApi.Model;
+﻿using System;
+using System.Collections.Generic;
 
-public class Filemetadatum
+namespace JatodaBackendApi.Models;
+
+public partial class Filemetadatum
 {
     public int Id { get; set; }
 
@@ -14,9 +17,9 @@ public class Filemetadatum
 
     public string Filepath { get; set; } = null!;
 
-    public DateTime? Createdat { get; set; }
+    public DateTime Createdat { get; set; }
 
-    public DateTime? Updatedat { get; set; }
+    public DateTime Updatedat { get; set; }
 
     public virtual Todonote Todonote { get; set; } = null!;
 }

@@ -1,5 +1,5 @@
-using System.Security.Claims;
-using JatodaBackendApi.Model;
+using JatodaBackendApi.Models;
+using JatodaBackendApi.ModelViews;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +28,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest? model)
+    public async Task<IActionResult> Login(LoginRequestModelView? model)
     {
         if (
             model == null
@@ -57,6 +57,8 @@ public class AuthenticationController : ControllerBase
             {
                 message = "Login successful",
                 username = user.Username,
+                userid = user.Id,
+                token
             }
         );
     }
@@ -81,7 +83,7 @@ public class AuthenticationController : ControllerBase
         }
     }
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest? model)
+    public async Task<IActionResult> Register([FromBody] RegisterRequestModelView? model)
     {
         if (
             model == null
@@ -112,7 +114,6 @@ public class AuthenticationController : ControllerBase
             Username = model.Username,
             Passwordhash = passwordHash,
             Email = model.Email,
-            Passwordsalt = "test" // TODO: remove salt from model and from here
         };
 
         var createdUser = await _userProvider.AddUserAsync(user);

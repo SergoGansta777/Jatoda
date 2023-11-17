@@ -1,6 +1,9 @@
-﻿namespace JatodaBackendApi.Model;
+﻿using System;
+using System.Collections.Generic;
 
-public class Todonote
+namespace JatodaBackendApi.Models;
+
+public partial class Todonote
 {
     public int Id { get; set; }
 
@@ -14,9 +17,11 @@ public class Todonote
 
     public string? Notes { get; set; }
 
-    public DateTime? Createdat { get; set; }
+    public DateTime Createdat { get; set; }
 
-    public DateTime? Updatedat { get; set; }
+    public DateTime Updatedat { get; set; }
+
+    public DateTime? Completedon { get; set; }
 
     public virtual ICollection<Filemetadatum> Filemetadata { get; set; } = new List<Filemetadatum>();
 

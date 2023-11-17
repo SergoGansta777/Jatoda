@@ -1,4 +1,4 @@
-namespace JatodaBackendApi.Repositories.Interfaces;
+namespace JatodaBackendApi.Services.CacheService.Repositories.Interfaces;
 
 public interface ICacheRepository
 {

@@ -1,6 +1,9 @@
-﻿namespace JatodaBackendApi.Model;
+﻿using System;
+using System.Collections.Generic;
 
-public class User
+namespace JatodaBackendApi.Models;
+
+public partial class User
 {
     public int Id { get; set; }
 
@@ -10,11 +13,9 @@ public class User
 
     public string Passwordhash { get; set; } = null!;
 
-    public string Passwordsalt { get; set; } = null!;
+    public DateTime Createdat { get; set; }
 
-    public DateTime? Createdat { get; set; }
-
-    public DateTime? Updatedat { get; set; }
+    public DateTime Updatedat { get; set; }
 
     public virtual ICollection<Todonote> Todonotes { get; set; } = new List<Todonote>();
 

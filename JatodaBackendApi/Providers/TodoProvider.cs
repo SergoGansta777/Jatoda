@@ -1,4 +1,4 @@
-using JatodaBackendApi.Model;
+using JatodaBackendApi.Models;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Repositories.Interfaces;
 using JatodaBackendApi.Services.CacheService.Interfaces;
@@ -25,19 +25,7 @@ public class TodoProvider : ITodoProvider<Todonote>
 
     public async Task<List<Todonote>?> GetAllTodosAsync()
     {
-        var todos = await _cacheService.GetFromCacheAsync<List<Todonote>>("todos");
-        if (todos == null)
-            try
-            {
-                todos = (await _todoRepository.GetAllAsync()).ToList();
-                await _cacheService.SetCacheAsync("todos", todos, DefaultTimeForCache);
-                _logger.LogInformation("Retrieved todos from the repository and set them in the cache");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving todos from the repository");
-            }
-
+        var todos = (await _todoRepository.GetAllAsync()).ToList();
         return todos;
     }
 
@@ -50,7 +38,9 @@ public class TodoProvider : ITodoProvider<Todonote>
             {
                 todo = await _todoRepository.GetByIdAsync(id);
                 await _cacheService.SetCacheAsync(cacheKey, todo, DefaultTimeForCache);
-                _logger.LogInformation($"Retrieved todo with id {id} from the repository and set it in the cache");
+                _logger.LogInformation(
+                    $"Retrieved todo with id {id} from the repository and set it in the cache"
+                );
             }
             catch (Exception ex)
             {
@@ -62,8 +52,8 @@ public class TodoProvider : ITodoProvider<Todonote>
 
     public async Task<Todonote> AddTodoAsync(Todonote todo)
     {
-        todo.Createdat = DateTime.Now;
-        todo.Updatedat = DateTime.Now;
+        //todo.Createdat = DateTime.Now.ToUniversalTime();
+        //todo.Updatedat = DateTime.Now.ToUniversalTime();
 
         var createdTodo = await _todoRepository.CreateAsync(todo);
         await _cacheService.SetCacheAsync(
@@ -94,21 +84,7 @@ public class TodoProvider : ITodoProvider<Todonote>
 
     public async Task<List<Todonote>?> GetTodosByUserIdAsync(int userId)
     {
-        var cacheKey = $"todos:{userId}";
-        var todos = await _cacheService.GetFromCacheAsync<List<Todonote>>(cacheKey);
-        if (todos == null)
-            try
-            {
-                todos = (await _todoRepository.GetAllAsync()).Where(t => t.User.Id == userId).ToList();
-                await _cacheService.SetCacheAsync(cacheKey, todos, DefaultTimeForCache);
-                _logger.LogInformation(
-                    $"Retrieved todos for user id {userId} from the repository and set them in the cache");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error retrieving todos for user id {userId} from the repository");
-            }
-
+        var todos = (await _todoRepository.GetAllAsync()).Where(t => t.Userid == userId).ToList();
         return todos;
     }
 

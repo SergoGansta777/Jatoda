@@ -1,6 +1,6 @@
-namespace JatodaBackendApi.Model;
+namespace JatodaBackendApi.ModelViews;
 
-public class RegisterRequest
+public class RegisterRequestModelView
 {
     public string Username { get; set; }
     public string Email { get; set; }

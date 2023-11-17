@@ -1,4 +1,6 @@
-using JatodaBackendApi.Model;
+using AutoMapper;
+using JatodaBackendApi.Models;
+using JatodaBackendApi.ModelViews;
 using JatodaBackendApi.Providers.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,18 +14,24 @@ public class ToDoController : ControllerBase
 {
     private readonly ILogger<AuthenticationController> _logger;
     private readonly ITodoProvider<Todonote> _todoProvider;
+    private readonly IUserProvider<User> _userProvider;
+    private readonly IMapper _mapper;
 
-    public ToDoController(ITodoProvider<Todonote> todoProvider, ILogger<AuthenticationController> logger)
+    public ToDoController(ITodoProvider<Todonote> todoProvider, ILogger<AuthenticationController> logger, IUserProvider<User> userProvider, IMapper mapper)
     {
         _todoProvider = todoProvider;
         _logger = logger;
+        _userProvider = userProvider;
+        _mapper = mapper;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var todos = await _todoProvider.GetAllTodosAsync();
-        return Ok(todos);
+        if (todos == null) return NotFound();
+        var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
+        return Ok(mappedTodos);
     }
 
     [HttpGet("{id}")]
@@ -31,25 +39,44 @@ public class ToDoController : ControllerBase
     {
         var todo = await _todoProvider.GetTodoByIdAsync(id);
         if (todo == null) return NotFound();
-
-        return Ok(todo);
+        var mappedTodo = _mapper.Map<TodonoteViewModel>(todo);
+        return Ok(mappedTodo);
+    }
+    
+    [HttpGet("byuser/{userId}")]
+    public async Task<IActionResult> GetTodosByUserId(int userId)
+    {
+        var todos = await _todoProvider.GetTodosByUserIdAsync(userId);
+        if (todos == null) return Ok(todos);
+        var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
+        return Ok(mappedTodos);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] Todonote todo)
+    public async Task<IActionResult> Add([FromBody] TodonoteViewModel todo)
     {
-        var createdTodo = await _todoProvider.AddTodoAsync(todo);
-        return CreatedAtAction(nameof(GetById), new {id = createdTodo.Id}, createdTodo);
+        var newTodo = new Todonote()
+        {
+            Name = todo.Name,   
+            Notes = todo.Notes,
+            Userid = todo.Userid,
+            Difficultylevel = 1,
+            Tags = new List<Tag>(),
+        };
+        
+        var createdTodo = await _todoProvider.AddTodoAsync(newTodo);
+        var mappedTodo = _mapper.Map<TodonoteViewModel>(createdTodo);
+        return CreatedAtAction(nameof(GetById), new {id = createdTodo}, mappedTodo);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Todonote todo)
+    public async Task<IActionResult> Update(int id, [FromBody] TodonoteViewModel todo)
     {
-        var existingTodo = await _todoProvider.GetTodoByIdAsync(todo.Id);
+        var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
         if (existingTodo == null) return NotFound();
         existingTodo.Name = todo.Name;
         existingTodo.Notes = todo.Notes;
-        existingTodo.Tags = todo.Tags;
+        existingTodo.Tags = new List<Tag>();
 
 
         await _todoProvider.UpdateTodoAsync(existingTodo);

@@ -1,8 +1,9 @@
 using JatodaBackendApi.Repositories.Interfaces;
+using JatodaBackendApi.Services.CacheService.Repositories.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
-namespace JatodaBackendApi.Repositories;
+namespace JatodaBackendApi.Services.CacheService.Repositories;
 
 public class CacheRepository : ICacheRepository
 {

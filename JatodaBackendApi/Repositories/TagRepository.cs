@@ -1,4 +1,4 @@
-using JatodaBackendApi.Model;
+using JatodaBackendApi.Models;
 using JatodaBackendApi.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

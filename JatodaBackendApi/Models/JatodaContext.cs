@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace JatodaBackendApi.Model;
+namespace JatodaBackendApi.Models;
 
 public partial class JatodaContext : DbContext
 {
@@ -25,9 +25,6 @@ public partial class JatodaContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https: //go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Username=sergejnehorosev;Password=895318;DataBase=Jatoda");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -104,6 +101,7 @@ public partial class JatodaContext : DbContext
             entity.ToTable("todonotes");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Completedon).HasColumnName("completedon");
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("createdat");
@@ -148,9 +146,7 @@ public partial class JatodaContext : DbContext
 
             entity.ToTable("users");
 
-            entity.HasIndex(e => e.Email, "uq_users_email").IsUnique();
-
-            entity.HasIndex(e => e.Username, "uq_users_username").IsUnique();
+            entity.HasIndex(e => e.Email, "users_email_key").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Createdat)
@@ -162,9 +158,6 @@ public partial class JatodaContext : DbContext
             entity.Property(e => e.Passwordhash)
                 .HasMaxLength(255)
                 .HasColumnName("passwordhash");
-            entity.Property(e => e.Passwordsalt)
-                .HasMaxLength(255)
-                .HasColumnName("passwordsalt");
             entity.Property(e => e.Updatedat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("updatedat");

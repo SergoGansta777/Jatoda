@@ -1,4 +1,4 @@
-using JatodaBackendApi.Model;
+using JatodaBackendApi.Models;
 
 namespace JatodaBackendApi.Providers.Interfaces;
 
