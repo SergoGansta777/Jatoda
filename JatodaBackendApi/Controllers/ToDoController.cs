@@ -43,10 +43,20 @@ public class ToDoController : ControllerBase
         return Ok(mappedTodo);
     }
     
-    [HttpGet("byuser/{userId}")]
+    [HttpGet("todos/{userId}")]
     public async Task<IActionResult> GetTodosByUserId(int userId)
     {
         var todos = await _todoProvider.GetTodosByUserIdAsync(userId);
+        todos = todos.Where(t => t.Completedon == null).ToList();
+        if (todos == null) return Ok(todos);
+        var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
+        return Ok(mappedTodos);
+    }
+    [HttpGet("completedtodos/{userId}")]
+    public async Task<IActionResult> GetCompletedTodosByUserId(int userId)
+    {
+        var todos = await _todoProvider.GetTodosByUserIdAsync(userId);
+        todos = todos.Where(t => t.Completedon != null).ToList();
         if (todos == null) return Ok(todos);
         var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
         return Ok(mappedTodos);
@@ -74,14 +84,25 @@ public class ToDoController : ControllerBase
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
         if (existingTodo == null) return NotFound();
-        existingTodo.Name = todo.Name;
-        existingTodo.Notes = todo.Notes;
-        existingTodo.Tags = new List<Tag>();
+        // TODO: convert here
 
 
         await _todoProvider.UpdateTodoAsync(existingTodo);
         return NoContent();
     }
+    
+    [HttpPut("complete/{id}")]
+    public async Task<IActionResult> Complete(int id, [FromBody]  CompleteRequest request)
+    {
+        var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
+        if (existingTodo == null) return NotFound();
+        existingTodo.Completedon = DateTime.Parse(request.CompletedOn).ToUniversalTime();
+
+
+        await _todoProvider.UpdateTodoAsync(existingTodo);
+        return NoContent();
+    }
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)

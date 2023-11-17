@@ -7,4 +7,5 @@ public class TodonoteViewModel
     public int Userid { get; set; }
 
     public string Name { get; set; } = null!;
+    public DateTime? CompletedOn { get; set; }
 }

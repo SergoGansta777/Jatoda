@@ -12,4 +12,5 @@ public interface ITodoProvider<T> where T : class
     Task<List<T>?> GetTodosByUserIdAsync(int id);
     Task<List<T>?> GetTodosWithTagAsync(int tagId);
     Task<List<T>?> GetTodosWithDifficultyLevelAsync(int difficultyLevel);
+    Task<List<Todonote>?> GetCompletedTodosByUserIdAsync(int userId);
 }

@@ -68,7 +68,7 @@ public class TodoProvider : ITodoProvider<Todonote>
 
     public async Task UpdateTodoAsync(Todonote todo)
     {
-        todo.Updatedat = DateTime.Now;
+        todo.Updatedat = DateTime.Now.ToUniversalTime();
 
         await _todoRepository.UpdateAsync(todo);
         await _cacheService.RemoveFromCacheAsync($"todo:{todo.Id}");
@@ -85,6 +85,12 @@ public class TodoProvider : ITodoProvider<Todonote>
     public async Task<List<Todonote>?> GetTodosByUserIdAsync(int userId)
     {
         var todos = (await _todoRepository.GetAllAsync()).Where(t => t.Userid == userId).ToList();
+        return todos;
+    }
+    
+    public async Task<List<Todonote>?> GetCompletedTodosByUserIdAsync(int userId)
+    {
+        var todos = (await _todoRepository.GetAllAsync()).Where(t => t.Userid == userId && t.Completedon != null).ToList();
         return todos;
     }
 
