@@ -14,14 +14,12 @@ public class ToDoController : ControllerBase
 {
     private readonly ILogger<AuthenticationController> _logger;
     private readonly ITodoProvider<Todonote> _todoProvider;
-    private readonly IUserProvider<User> _userProvider;
     private readonly IMapper _mapper;
 
-    public ToDoController(ITodoProvider<Todonote> todoProvider, ILogger<AuthenticationController> logger, IUserProvider<User> userProvider, IMapper mapper)
+    public ToDoController(ITodoProvider<Todonote> todoProvider, ILogger<AuthenticationController> logger, IMapper mapper)
     {
         _todoProvider = todoProvider;
         _logger = logger;
-        _userProvider = userProvider;
         _mapper = mapper;
     }
 
