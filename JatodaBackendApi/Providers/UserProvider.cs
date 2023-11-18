@@ -17,32 +17,28 @@ public class UserProvider : IUserProvider<User>
         _userRepository = userRepository;
     }
 
-    public async Task<User?> GetByUsernameAsync(string username)
+    public async Task<User?> GetByUsernameAsync(string? username)
     {
         var cacheKey = $"user:{username}";
         var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
 
-        if (user == null)
-        {
-            user = (await _userRepository.GetAllAsync()).FirstOrDefault(
-                u => u.Username == username
-            );
-            if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
-        }
+        if (user != null) return user;
+        user = (await _userRepository.GetAllAsync()).FirstOrDefault(
+            u => u.Username == username
+        );
+        if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
 
         return user;
     }
 
-    public async Task<User?> GetByEmailAsync(string email)
+    public async Task<User?> GetByEmailAsync(string? email)
     {
         var cacheKey = $"user_email:{email}";
         var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
 
-        if (user == null)
-        {
-            user = (await _userRepository.GetAllAsync()).FirstOrDefault(u => u.Email == email);
-            if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
-        }
+        if (user != null) return user;
+        user = (await _userRepository.GetAllAsync()).FirstOrDefault(u => u.Email == email);
+        if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
 
         return user;
     }

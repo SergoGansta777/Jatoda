@@ -2,5 +2,5 @@ namespace JatodaBackendApi.ModelViews;
 
 public class CompleteRequest
 {
-    public string CompletedOn { get; set; }
+    public string? CompletedOn { get; set; }
 }

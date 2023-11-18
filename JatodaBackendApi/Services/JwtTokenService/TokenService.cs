@@ -1,23 +1,23 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using JatodaBackendApi.Services.Interfaces;
+using JatodaBackendApi.Services.JwtTokenService.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
-namespace JatodaBackendApi.Services;
+namespace JatodaBackendApi.Services.JwtTokenService;
 
 public class TokenService : ITokenService
 {
     private readonly IConfiguration _configuration;
-    private readonly List<string> _revokedToken;
+    private readonly List<string?> _revokedToken;
 
     public TokenService(IConfiguration configuration)
     {
         _configuration = configuration;
-        _revokedToken = new List<string>();
+        _revokedToken = new List<string?>();
     }
 
-    public string GenerateToken(string userId, string username)
+    public string GenerateToken(string userId, string? username)
     {
         try
         {
@@ -55,8 +55,10 @@ public class TokenService : ITokenService
         }
     }
 
-    public JwtSecurityToken ValidateToken(string token)
+    public JwtSecurityToken ValidateToken(string? token)
     {
+        if (string.IsNullOrEmpty(token)) throw new ArgumentNullException(nameof(token));
+        if (_revokedToken.Contains(token)) throw new SecurityTokenException("Token revoked.");
         var tokenHandler = new JwtSecurityTokenHandler();
 
         if (!tokenHandler.CanReadToken(token)) throw new ArgumentException("Invalid JWT token format.");
@@ -97,7 +99,7 @@ public class TokenService : ITokenService
         }
     }
 
-    public void RevokeToken(string token)
+    public void RevokeToken(string? token)
     {
         _revokedToken.Add(token);
     }

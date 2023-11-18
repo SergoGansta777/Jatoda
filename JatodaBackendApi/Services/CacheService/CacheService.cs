@@ -1,6 +1,5 @@
 using JatodaBackendApi.Services.CacheService.Interfaces;
 using JatodaBackendApi.Services.CacheService.Repositories.Interfaces;
-using Newtonsoft.Json;
 
 namespace JatodaBackendApi.Services.CacheService;
 

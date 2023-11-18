@@ -1,7 +1,7 @@
 using JatodaBackendApi.Models;
 using JatodaBackendApi.ModelViews;
 using JatodaBackendApi.Providers.Interfaces;
-using JatodaBackendApi.Services.Interfaces;
+using JatodaBackendApi.Services.JwtTokenService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BCryptNet = BCrypt.Net.BCrypt;
@@ -67,7 +67,7 @@ public class AuthenticationController : ControllerBase
     [Authorize(AuthenticationSchemes = "Bearer")]
     public IActionResult Logout()
     {
-        if (Request.Cookies.TryGetValue("jwt", out string token))
+        if (Request.Cookies.TryGetValue("jwt", out var token))
         {
             _tokenService.RevokeToken(token);
             Response.Cookies.Delete("jwt");
@@ -76,12 +76,11 @@ public class AuthenticationController : ControllerBase
 
             return Ok();
         }
-        else
-        {
-            _logger.LogWarning("No jwt cookie found.");
-            return BadRequest("No jwt cookie found.");
-        }
+
+        _logger.LogWarning("No jwt cookie found.");
+        return BadRequest("No jwt cookie found.");
     }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestModelView? model)
     {
@@ -113,7 +112,7 @@ public class AuthenticationController : ControllerBase
         {
             Username = model.Username,
             Passwordhash = passwordHash,
-            Email = model.Email,
+            Email = model.Email
         };
 
         var createdUser = await _userProvider.AddUserAsync(user);
@@ -126,7 +125,7 @@ public class AuthenticationController : ControllerBase
             createdUser
         );
     }
-    
+
     [HttpGet("user")]
     [Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<IActionResult> UserByToken()
@@ -136,8 +135,8 @@ public class AuthenticationController : ControllerBase
             var jwt = Request.Cookies["jwt"];
             if (jwt == null) return Unauthorized();
             var token = _tokenService.ValidateToken(jwt);
-            var userId = int.Parse(token.Payload.First(c =>c.Key == "nameid").Value.ToString()!);
-            var user = await _userProvider.GetByIdAsync(userId); 
+            var userId = int.Parse(token.Payload.First(c => c.Key == "nameid").Value.ToString()!);
+            var user = await _userProvider.GetByIdAsync(userId);
             return Ok(user);
         }
         catch (Exception ex)

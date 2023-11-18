@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace JatodaBackendApi.Models;
 
-namespace JatodaBackendApi.Models;
-
-public partial class Filemetadatum
+public class Filemetadatum
 {
     public int Id { get; set; }
 

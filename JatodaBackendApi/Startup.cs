@@ -6,12 +6,12 @@ using JatodaBackendApi.Providers;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Repositories;
 using JatodaBackendApi.Repositories.Interfaces;
-using JatodaBackendApi.Services;
 using JatodaBackendApi.Services.CacheService;
 using JatodaBackendApi.Services.CacheService.Interfaces;
 using JatodaBackendApi.Services.CacheService.Repositories;
 using JatodaBackendApi.Services.CacheService.Repositories.Interfaces;
-using JatodaBackendApi.Services.Interfaces;
+using JatodaBackendApi.Services.JwtTokenService;
+using JatodaBackendApi.Services.JwtTokenService.Interfaces;
 using JatodaBackendApi.Services.MinIoService;
 using JatodaBackendApi.Services.MinIoService.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -77,7 +77,7 @@ public static class Startup
         services.AddScoped<IUserProvider<User>, UserProvider>();
         services.AddScoped<IMinioService, MinioService>();
         services.AddScoped<IFileProvider, FileProvider>();
-        
+
         services.AddSingleton<IMinioClient, MinioClient>();
 
         services.Configure<MinioOptions>(configuration.GetSection("Minio"));
@@ -108,7 +108,7 @@ public static class Startup
                         Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]!)
                     )
                 };
-                options.Events = new JwtBearerEvents()
+                options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
                     {
@@ -134,7 +134,7 @@ public static class Startup
         app.UseAuthorization();
         app.UseAuthentication();
         app.UseCors(options => options
-            .WithOrigins(new[] {"http://localhost:3000", "http://localhost:8080", "http://localhost:4200"})
+            .WithOrigins("http://localhost:3000", "http://localhost:8080", "http://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()

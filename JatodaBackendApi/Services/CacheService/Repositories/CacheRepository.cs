@@ -1,4 +1,3 @@
-using JatodaBackendApi.Repositories.Interfaces;
 using JatodaBackendApi.Services.CacheService.Repositories.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;

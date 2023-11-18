@@ -33,27 +33,27 @@ public class TodoProvider : ITodoProvider<Todonote>
     {
         var cacheKey = $"todo:{id}";
         var todo = await _cacheService.GetFromCacheAsync<Todonote>(cacheKey);
-        if (todo == null)
-            try
-            {
-                todo = await _todoRepository.GetByIdAsync(id);
-                await _cacheService.SetCacheAsync(cacheKey, todo, DefaultTimeForCache);
-                _logger.LogInformation(
-                    $"Retrieved todo with id {id} from the repository and set it in the cache"
-                );
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error retrieving todo with id {id} from the repository");
-            }
+        if (todo != null) return todo;
+        try
+        {
+            todo = await _todoRepository.GetByIdAsync(id);
+            await _cacheService.SetCacheAsync(cacheKey, todo, DefaultTimeForCache);
+            _logger.LogInformation(
+                $"Retrieved todo with id {id} from the repository and set it in the cache"
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error retrieving todo with id {id} from the repository");
+        }
 
         return todo;
     }
 
     public async Task<Todonote> AddTodoAsync(Todonote todo)
     {
-        //todo.Createdat = DateTime.Now.ToUniversalTime();
-        //todo.Updatedat = DateTime.Now.ToUniversalTime();
+        todo.Createdat = DateTime.Now.ToUniversalTime();
+        todo.Updatedat = DateTime.Now.ToUniversalTime();
 
         var createdTodo = await _todoRepository.CreateAsync(todo);
         await _cacheService.SetCacheAsync(
@@ -87,10 +87,11 @@ public class TodoProvider : ITodoProvider<Todonote>
         var todos = (await _todoRepository.GetAllAsync()).Where(t => t.Userid == userId).ToList();
         return todos;
     }
-    
+
     public async Task<List<Todonote>?> GetCompletedTodosByUserIdAsync(int userId)
     {
-        var todos = (await _todoRepository.GetAllAsync()).Where(t => t.Userid == userId && t.Completedon != null).ToList();
+        var todos = (await _todoRepository.GetAllAsync()).Where(t => t.Userid == userId && t.Completedon != null)
+            .ToList();
         return todos;
     }
 

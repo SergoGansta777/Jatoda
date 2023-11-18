@@ -5,8 +5,8 @@ namespace JatodaBackendApi.Providers;
 
 public class FileProvider : IFileProvider
 {
-    private readonly IMinioService _minioService;
     private readonly ILogger<FileProvider> _logger;
+    private readonly IMinioService _minioService;
 
     public FileProvider(IMinioService minioService, ILogger<FileProvider> logger)
     {
