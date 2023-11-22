@@ -21,10 +21,12 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Minio;
 using StackExchange.Redis;
+using JatodaBackendApi.Extensions;
+
 
 namespace JatodaBackendApi;
 
-public static class Startup
+public class Startup
 {
     public static void ConfigureServices(
         HostBuilderContext hostContext,
@@ -33,7 +35,7 @@ public static class Startup
     {
         var configuration = hostContext.Configuration;
 
-        services.ConfigureLoggerService();
+        services.AddLogging();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
@@ -130,6 +132,9 @@ public static class Startup
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        
+        var logger = app.ApplicationServices.GetRequiredService<ILogger<Startup>>();
+        app.ConfigureExceptionHandler(logger);
 
         app.UseHttpsRedirection();
         app.UseRouting();
