@@ -1,4 +1,5 @@
 using System.Text;
+using AspNetCoreRateLimit;
 using JatodaBackendApi.Extensions;
 using JatodaBackendApi.Mappers;
 using JatodaBackendApi.Models.DBModels;
@@ -67,6 +68,16 @@ public class Startup
             ConnectionMultiplexer.Connect(cacheConnectionString!)
         );
 
+        services.AddOptions();
+        services.AddMemoryCache();
+        services.AddHttpContextAccessor();
+        services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
+        services.Configure<IpRateLimitPolicies>(configuration.GetSection("IpRateLimitPolicies"));
+        services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+        services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+        services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+        services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+        
         services.AddDistributedMemoryCache();
         services.AddSingleton<ICacheRepository, CacheRepository>();
         services.AddSingleton<ICacheService, CacheService>();
@@ -135,6 +146,7 @@ public class Startup
         app.ConfigureExceptionHandler(logger);
 
         app.UseHttpsRedirection();
+        app.UseIpRateLimiting();
         app.UseRouting();
         app.UseAuthorization();
         app.UseAuthentication();
