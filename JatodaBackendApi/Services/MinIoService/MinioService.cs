@@ -39,7 +39,7 @@ public class MinioService : IMinioService
         return await _minioClient!.PresignedGetObjectAsync(new PresignedGetObjectArgs().WithBucket(bucketName)
             .WithObject(objectName).WithExpiry(3600));
     }
-    
+
     public async Task<Stream?> GetObjectAsync(string bucketName, string objectName)
     {
         try

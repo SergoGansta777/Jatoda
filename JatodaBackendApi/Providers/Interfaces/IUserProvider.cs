@@ -1,4 +1,3 @@
-using JatodaBackendApi.Models;
 using JatodaBackendApi.Models.DBModels;
 
 namespace JatodaBackendApi.Providers.Interfaces;

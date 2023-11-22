@@ -53,7 +53,7 @@ public class FileProvider : IFileProvider
     {
         try
         {
-            Stream? fileStream = await _minioService.GetObjectAsync("my-bucketl", fileName);
+            var fileStream = await _minioService.GetObjectAsync("my-bucketl", fileName);
             _logger.LogInformation("File retrieved successfull");
             return fileStream;
         }

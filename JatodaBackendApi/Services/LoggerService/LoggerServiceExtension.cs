@@ -4,6 +4,8 @@ namespace JatodaBackendApi.Services.LoggerService;
 
 public static class LoggerServiceExtension
 {
-    public static void ConfigureLoggerService(this IServiceCollection services) =>
+    public static void ConfigureLoggerService(this IServiceCollection services)
+    {
         services.AddSingleton<ILoggerManager, LoggerManager>();
+    }
 }

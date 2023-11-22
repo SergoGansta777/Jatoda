@@ -1,5 +1,4 @@
 using AutoMapper;
-using JatodaBackendApi.Models;
 using JatodaBackendApi.Models.DBModels;
 using JatodaBackendApi.Models.ModelViews;
 
