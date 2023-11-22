@@ -1,3 +1,4 @@
+using AutoMapper;
 using JatodaBackendApi.Models.DBModels;
 using JatodaBackendApi.Models.ModelViews;
 using JatodaBackendApi.Providers.Interfaces;
@@ -13,18 +14,21 @@ namespace JatodaBackendApi.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly ILogger<AuthenticationController> _logger;
+    private readonly IMapper _mapper;
     private readonly ITokenService _tokenService;
     private readonly IUserProvider<User> _userProvider;
 
     public AuthenticationController(
         IUserProvider<User> userProvider,
         ITokenService tokenService,
-        ILogger<AuthenticationController> logger
+        ILogger<AuthenticationController> logger,
+        IMapper mapper
     )
     {
         _userProvider = userProvider;
         _tokenService = tokenService;
         _logger = logger;
+        _mapper = mapper;
     }
 
     [HttpPost("login")]
@@ -115,13 +119,15 @@ public class AuthenticationController : ControllerBase
         };
 
         var createdUser = await _userProvider.AddUserAsync(user);
-
+        
         _logger.LogInformation("User {Username} registered successfully.", user.Username);
+
+        var mappedUser = _mapper.Map<User, UserViewModel>(createdUser);
 
         return CreatedAtAction(
             nameof(Register),
             new {id = user.Id},
-            createdUser
+            mappedUser
         );
     }
 
