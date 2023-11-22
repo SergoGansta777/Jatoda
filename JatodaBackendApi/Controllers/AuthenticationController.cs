@@ -138,8 +138,10 @@ public class AuthenticationController : ControllerBase
         try
         {
             var jwt = Request.Cookies["jwt"];
-            if (jwt == null) return Unauthorized();
+            if (jwt is null)
+                return Unauthorized();
             var token = _tokenService.ValidateToken(jwt);
+            
             var userId = int.Parse(token.Payload.First(c => c.Key == "nameid").Value.ToString()!);
             var user = await _userProvider.GetByIdAsync(userId);
             return Ok(user);

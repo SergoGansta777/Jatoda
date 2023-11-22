@@ -16,51 +16,27 @@ public class FileProvider : IFileProvider
 
     public async Task<string> UploadFileAsync(IFormFile? file)
     {
-        try
+        using (var stream = new MemoryStream())
         {
-            using (var stream = new MemoryStream())
-            {
-                await file.CopyToAsync(stream);
-                await _minioService.UploadFileAsync("mybucket", file.FileName, stream);
-            }
+            await file.CopyToAsync(stream);
+            await _minioService.UploadFileAsync("mybucket", file.FileName, stream);
+        }
 
-            _logger.LogInformation("File uploaded successfully");
-            return "File uploaded successfully";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while uploading the file");
-            return "An error occurred while uploading the file";
-        }
+        _logger.LogInformation("File uploaded successfully");
+        return "File uploaded successfully";
     }
 
     public async Task<string> GetFileUrlAsync(string fileName)
     {
-        try
-        {
-            var url = await _minioService.GetFileUrlAsync("my-bucket", fileName);
-            _logger.LogInformation("File URL retrieved successfully");
-            return url;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while retrieving the file URL");
-            return "An error occurred while retrieving the file URL";
-        }
+        var url = await _minioService.GetFileUrlAsync("my-bucket", fileName);
+        _logger.LogInformation("File URL retrieved successfully");
+        return url;
     }
 
     public async Task<Stream?> GetFileAsync(string fileName)
     {
-        try
-        {
-            var fileStream = await _minioService.GetObjectAsync("my-bucketl", fileName);
-            _logger.LogInformation("File retrieved successfull");
-            return fileStream;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while retrieving the file");
-            return null;
-        }
+        var fileStream = await _minioService.GetObjectAsync("my-bucketl", fileName);
+        _logger.LogInformation("File retrieved successfull");
+        return fileStream;
     }
 }
