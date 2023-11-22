@@ -1,7 +1,9 @@
 using JatodaBackendApi.Models;
-using JatodaBackendApi.ModelViews;
+using JatodaBackendApi.Models.DBModels;
+using JatodaBackendApi.Models.ModelViews;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Services.JwtTokenService.Interfaces;
+using JatodaBackendApi.Services.LoggerService.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BCryptNet = BCrypt.Net.BCrypt;
@@ -58,7 +60,6 @@ public class AuthenticationController : ControllerBase
                 message = "Login successful",
                 username = user.Username,
                 userid = user.Id,
-                token
             }
         );
     }

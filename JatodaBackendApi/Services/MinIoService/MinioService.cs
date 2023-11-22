@@ -39,4 +39,30 @@ public class MinioService : IMinioService
         return await _minioClient!.PresignedGetObjectAsync(new PresignedGetObjectArgs().WithBucket(bucketName)
             .WithObject(objectName).WithExpiry(3600));
     }
+    
+    public async Task<Stream?> GetObjectAsync(string bucketName, string objectName)
+    {
+        try
+        {
+            // Create a new MemoryStream that will hold the file data
+            var memoryStream = new MemoryStream();
+
+            // Retrieve the file data from MinIO and write it to the MemoryStream
+            await _minioClient.GetObjectAsync(new GetObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(objectName)
+                .WithCallbackStream(s => s.CopyTo(memoryStream)));
+
+            // Reset the MemoryStream position to the start
+            memoryStream.Position = 0;
+
+            // Return the MemoryStream that now contains the file data
+            return memoryStream;
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors that may occur
+            throw new Exception($"An error occurred while retrieving the file: {ex.Message}", ex);
+        }
+    }
 }

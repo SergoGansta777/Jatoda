@@ -1,4 +1,4 @@
-namespace JatodaBackendApi.ModelViews;
+namespace JatodaBackendApi.Models.ModelViews;
 
 public class RegisterRequestModelView
 {

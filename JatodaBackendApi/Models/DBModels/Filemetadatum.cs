@@ -1,4 +1,4 @@
-﻿namespace JatodaBackendApi.Models;
+﻿namespace JatodaBackendApi.Models.DBModels;
 
 public class Filemetadatum
 {

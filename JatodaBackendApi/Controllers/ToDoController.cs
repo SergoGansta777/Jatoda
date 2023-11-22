@@ -1,6 +1,7 @@
 using AutoMapper;
 using JatodaBackendApi.Models;
-using JatodaBackendApi.ModelViews;
+using JatodaBackendApi.Models.DBModels;
+using JatodaBackendApi.Models.ModelViews;
 using JatodaBackendApi.Providers.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +15,16 @@ public class ToDoController : ControllerBase
 {
     private readonly ILogger<AuthenticationController> _logger;
     private readonly IMapper _mapper;
+    private readonly IFileProvider _fileProvider;
     private readonly ITodoProvider<Todonote> _todoProvider;
 
     public ToDoController(ITodoProvider<Todonote> todoProvider, ILogger<AuthenticationController> logger,
-        IMapper mapper)
+        IMapper mapper, IFileProvider fileProvider)
     {
         _todoProvider = todoProvider;
         _logger = logger;
         _mapper = mapper;
+        _fileProvider = fileProvider;
     }
 
     [HttpGet]
@@ -67,18 +70,39 @@ public class ToDoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] TodonoteViewModel todo)
     {
+        if (todo.file != null)
+        {
+            await _fileProvider.UploadFileAsync(todo.file);
+        }
+        
         var newTodo = new Todonote
         {
             Name = todo.Name,
             Notes = todo.Notes,
             Userid = todo.Userid,
             Difficultylevel = 1,
-            Tags = new List<Tag>()
+            Tags = new List<Tag>(),
+            Multimediafilepath = todo.file?.FileName,
         };
 
         var createdTodo = await _todoProvider.AddTodoAsync(newTodo);
         var mappedTodo = _mapper.Map<TodonoteViewModel>(createdTodo);
-        return CreatedAtAction(nameof(GetById), new {id = createdTodo}, mappedTodo);
+        return CreatedAtAction(nameof(GetById), new {id = createdTodo.Id}, mappedTodo);    }
+    
+    [HttpGet("fileoftodo/{id:int}")]
+    public async Task<IActionResult> GetFile(int id)
+    {
+        var todo = await _todoProvider.GetTodoByIdAsync(id);
+        if (todo == null)
+            return NotFound();
+
+        var fileName = todo.Multimediafilepath;
+        var fileStream = await _fileProvider.GetFileAsync(fileName);
+
+        if (fileStream == null)
+            return NotFound();
+
+        return File(fileStream, "application/octet-stream"); // return the file
     }
 
     [HttpPut("{id:int}")]
@@ -94,13 +118,12 @@ public class ToDoController : ControllerBase
     }
 
     [HttpPut("complete/{id:int}")]
-    public async Task<IActionResult> Complete(int id, [FromBody] CompleteRequest request)
+    public async Task<IActionResult> Complete(int id, [FromBody] CompleteRequestModelView requestModelView)
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
         if (existingTodo == null) return NotFound();
-        existingTodo.Completedon = DateTime.Parse(request.CompletedOn).ToUniversalTime();
-
-
+        if (requestModelView.CompletedOn == null) return BadRequest();
+        existingTodo.Completedon = DateTime.Parse(requestModelView.CompletedOn).ToUniversalTime();
         await _todoProvider.UpdateTodoAsync(existingTodo);
         return NoContent();
     }

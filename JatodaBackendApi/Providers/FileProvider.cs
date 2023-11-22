@@ -14,7 +14,7 @@ public class FileProvider : IFileProvider
         _logger = logger;
     }
 
-    public async Task<string> UploadFileAsync(IFormFile file)
+    public async Task<string> UploadFileAsync(IFormFile? file)
     {
         try
         {
@@ -46,6 +46,21 @@ public class FileProvider : IFileProvider
         {
             _logger.LogError(ex, "An error occurred while retrieving the file URL");
             return "An error occurred while retrieving the file URL";
+        }
+    }
+
+    public async Task<Stream?> GetFileAsync(string fileName)
+    {
+        try
+        {
+            Stream? fileStream = await _minioService.GetObjectAsync("my-bucketl", fileName);
+            _logger.LogInformation("File retrieved successfull");
+            return fileStream;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving the file");
+            return null;
         }
     }
 }

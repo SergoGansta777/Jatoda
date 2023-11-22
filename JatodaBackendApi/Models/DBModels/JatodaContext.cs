@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace JatodaBackendApi.Models;
+namespace JatodaBackendApi.Models.DBModels;
 
 public partial class JatodaContext : DbContext
 {

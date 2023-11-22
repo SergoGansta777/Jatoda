@@ -1,4 +1,4 @@
-namespace JatodaBackendApi.ModelViews;
+namespace JatodaBackendApi.Models.ModelViews;
 
 public class TodonoteViewModel
 {
@@ -8,4 +8,5 @@ public class TodonoteViewModel
 
     public string Name { get; set; } = null!;
     public DateTime? CompletedOn { get; set; }
+    public IFormFile? file { get; set; }
 }

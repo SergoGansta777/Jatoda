@@ -1,4 +1,5 @@
 using JatodaBackendApi.Models;
+using JatodaBackendApi.Models.DBModels;
 using JatodaBackendApi.Providers.Interfaces;
 using JatodaBackendApi.Repositories.Interfaces;
 using JatodaBackendApi.Services.CacheService.Interfaces;
@@ -45,6 +46,9 @@ public class UserProvider : IUserProvider<User>
 
     public async Task<User> AddUserAsync(User user)
     {
+        user.Createdat = DateTime.Now.ToUniversalTime();
+        user.Updatedat = DateTime.Now.ToUniversalTime();
+        
         await _userRepository.CreateAsync(user);
         return user;
     }

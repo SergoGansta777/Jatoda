@@ -1,6 +1,6 @@
 using System.Text;
 using JatodaBackendApi.Mappers;
-using JatodaBackendApi.Models;
+using JatodaBackendApi.Models.DBModels;
 using JatodaBackendApi.Options;
 using JatodaBackendApi.Providers;
 using JatodaBackendApi.Providers.Interfaces;
@@ -12,6 +12,7 @@ using JatodaBackendApi.Services.CacheService.Repositories;
 using JatodaBackendApi.Services.CacheService.Repositories.Interfaces;
 using JatodaBackendApi.Services.JwtTokenService;
 using JatodaBackendApi.Services.JwtTokenService.Interfaces;
+using JatodaBackendApi.Services.LoggerService;
 using JatodaBackendApi.Services.MinIoService;
 using JatodaBackendApi.Services.MinIoService.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,6 +33,7 @@ public static class Startup
     {
         var configuration = hostContext.Configuration;
 
+        services.ConfigureLoggerService();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
