@@ -25,20 +25,25 @@ public class UserRepository : IRepository<User>
 
     public async Task<User> CreateAsync(User user)
     {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return user;
+        var newUser = _context.Users.Add(user);
+        return newUser.Entity;
     }
 
-    public async Task UpdateAsync(User user)
+    public Task UpdateAsync(User user)
     {
         _context.Entry(user).State = EntityState.Modified;
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync(User user)
+    {
+        _context.Users.Remove(user);
+        return Task.CompletedTask;
+    }
+    
+    public async Task SaveChangesAsync()
+    {
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(User user)
-    {
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
-    }
 }

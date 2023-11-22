@@ -23,22 +23,26 @@ public class TagRepository : IRepository<Tag>
         return await _context.Tags.FindAsync(id);
     }
 
-    public async Task<Tag> CreateAsync(Tag tag)
+    public Task<Tag> CreateAsync(Tag tag)
     {
-        _context.Tags.Add(tag);
-        await _context.SaveChangesAsync();
-        return tag;
+        var newTag = _context.Tags.Add(tag);
+        return Task.FromResult(newTag.Entity);
     }
 
-    public async Task UpdateAsync(Tag tag)
+    public Task UpdateAsync(Tag tag)
     {
         _context.Entry(tag).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
+        return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(Tag tag)
+    public Task DeleteAsync(Tag tag)
     {
         _context.Tags.Remove(tag);
+        return Task.CompletedTask;
+    }
+    
+    public async Task SaveChangesAsync()
+    {
         await _context.SaveChangesAsync();
     }
 }

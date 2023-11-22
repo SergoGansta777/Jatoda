@@ -25,20 +25,25 @@ public class ToDoRepository : IRepository<Todonote>
 
     public async Task<Todonote> CreateAsync(Todonote entity)
     {
-        await _context.Todonotes.AddAsync(entity);
-        await _context.SaveChangesAsync();
-        return entity;
+        var newTodo = await _context.Todonotes.AddAsync(entity);
+        return newTodo.Entity;
     }
 
-    public async Task UpdateAsync(Todonote entity)
+    public Task UpdateAsync(Todonote entity)
     {
         _context.Entry(entity).State = EntityState.Modified;
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync(Todonote entity)
+    {
+        _context.Todonotes.Remove(entity);
+        return Task.CompletedTask;
+    }
+    
+    public async Task SaveChangesAsync()
+    {
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Todonote entity)
-    {
-        _context.Todonotes.Remove(entity);
-        await _context.SaveChangesAsync();
-    }
 }

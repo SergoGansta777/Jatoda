@@ -33,20 +33,15 @@ public class TodoProvider : ITodoProvider<Todonote>
     {
         var cacheKey = $"todo:{id}";
         var todo = await _cacheService.GetFromCacheAsync<Todonote>(cacheKey);
-        if (todo != null) return todo;
-        try
-        {
-            todo = await _todoRepository.GetByIdAsync(id);
-            await _cacheService.SetCacheAsync(cacheKey, todo, DefaultTimeForCache);
-            _logger.LogInformation(
-                $"Retrieved todo with id {id} from the repository and set it in the cache"
-            );
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error retrieving todo with id {id} from the repository");
-        }
-
+        
+        if (todo is not null) 
+            return todo;
+        
+        todo = await _todoRepository.GetByIdAsync(id);
+        await _cacheService.SetCacheAsync(cacheKey, todo, DefaultTimeForCache);
+        _logger.LogInformation(
+            $"Retrieved todo with id {id} from the repository and set it in the cache"
+        );
         return todo;
     }
 
@@ -63,6 +58,7 @@ public class TodoProvider : ITodoProvider<Todonote>
         );
         _logger.LogInformation($"Added new todo with id {createdTodo.Id} and set it in the cache");
 
+        await _todoRepository.SaveChangesAsync();
         return createdTodo;
     }
 
@@ -73,6 +69,8 @@ public class TodoProvider : ITodoProvider<Todonote>
         await _todoRepository.UpdateAsync(todo);
         await _cacheService.RemoveFromCacheAsync($"todo:{todo.Id}");
         _logger.LogInformation($"Updated todo with id {todo.Id} and removed it from the cache");
+        
+        await _todoRepository.SaveChangesAsync();
     }
 
     public async Task DeleteTodoAsync(Todonote todo)
@@ -80,6 +78,8 @@ public class TodoProvider : ITodoProvider<Todonote>
         await _todoRepository.DeleteAsync(todo);
         await _cacheService.RemoveFromCacheAsync($"todo:{todo.Id}");
         _logger.LogInformation($"Deleted todo with id {todo.Id} and removed it from the cache");
+        
+        await _todoRepository.SaveChangesAsync();
     }
 
     public async Task<List<Todonote>?> GetTodosByUserIdAsync(int userId)

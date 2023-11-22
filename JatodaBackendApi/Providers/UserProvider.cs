@@ -22,11 +22,14 @@ public class UserProvider : IUserProvider<User>
         var cacheKey = $"user:{username}";
         var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
 
-        if (user != null) return user;
+        if (user is not null)
+            return user;
+        
         user = (await _userRepository.GetAllAsync()).FirstOrDefault(
             u => u.Username == username
         );
-        if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
+        if (user is not null)
+            await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
 
         return user;
     }
@@ -36,9 +39,13 @@ public class UserProvider : IUserProvider<User>
         var cacheKey = $"user_email:{email}";
         var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
 
-        if (user != null) return user;
+        if (user is not null)
+            return user;
+        
         user = (await _userRepository.GetAllAsync()).FirstOrDefault(u => u.Email == email);
-        if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
+        
+        if (user is not null)
+            await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
 
         return user;
     }
@@ -49,6 +56,7 @@ public class UserProvider : IUserProvider<User>
         user.Updatedat = DateTime.Now.ToUniversalTime();
 
         await _userRepository.CreateAsync(user);
+        await _userRepository.SaveChangesAsync();
         return user;
     }
 
@@ -57,9 +65,13 @@ public class UserProvider : IUserProvider<User>
         var cacheKey = $"user_id:{id}";
         var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
 
-        if (user != null) return user;
+        if (user is not null)
+            return user;
+        
         user = await _userRepository.GetByIdAsync(id);
-        if (user != null) await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
+        
+        if (user is not null)
+            await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
 
         return user;
     }
