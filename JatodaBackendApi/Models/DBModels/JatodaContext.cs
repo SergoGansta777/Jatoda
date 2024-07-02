@@ -101,7 +101,7 @@ public partial class JatodaContext : DbContext
             entity.ToTable("todonotes");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Completedon).HasColumnName("completedon");
+            entity.Property(e => e.CompletedOn).HasColumnName("completedon");
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("createdat");

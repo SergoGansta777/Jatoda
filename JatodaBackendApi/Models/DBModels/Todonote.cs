@@ -18,7 +18,7 @@ public class Todonote
 
     public DateTime Updatedat { get; set; }
 
-    public DateTime? Completedon { get; set; }
+    public DateTime? CompletedOn { get; set; }
 
     public virtual ICollection<Filemetadatum> Filemetadata { get; set; } = new List<Filemetadatum>();
 

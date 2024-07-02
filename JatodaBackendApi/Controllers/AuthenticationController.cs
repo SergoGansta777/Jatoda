@@ -27,7 +27,7 @@ public class AuthController : ControllerBase
     /// <response code="200">Returns a success message along with user details.</response>
     /// <response code="400">Returns an error message if the login credentials are invalid.</response>
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequestModelView? model)
+    public async Task<IActionResult> Login([FromBody] LoginRequestModelView model)
     {
         return await _authService.Login(model);
     }
@@ -53,7 +53,7 @@ public class AuthController : ControllerBase
     /// <response code="201">Returns the created user details if registration is successful.</response>
     /// <response code="400">Returns an error message if the registration details are invalid.</response>
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequestModelView? model)
+    public async Task<IActionResult> Register([FromBody] RegisterRequestModelView model)
     {
         return await _authService.Register(model);
     }
@@ -84,8 +84,8 @@ public class AuthController : ControllerBase
 
     private void SetCorsHeaders()
     {
-        Response.Headers.Add("Access-Control-Allow-Origin", "*");
-        Response.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-        Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        Response.Headers.Append("Access-Control-Allow-Origin", "*");
+        Response.Headers.Append("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+        Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
     }
 }

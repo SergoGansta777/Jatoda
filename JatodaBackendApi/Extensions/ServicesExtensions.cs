@@ -96,6 +96,7 @@ public static class ServicesExtensions
         services.AddDistributedMemoryCache();
         services.AddHttpContextAccessor();
         services.AddControllers();
+        services.Configure<RouteOptions>(options => options.LowercaseUrls = true); 
     }
 
     private static void RegisterAuthentication(IServiceCollection services, IConfiguration configuration)

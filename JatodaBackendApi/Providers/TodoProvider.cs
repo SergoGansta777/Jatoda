@@ -90,7 +90,7 @@ public class TodoProvider : ITodoProvider<Todonote>
 
     public async Task<List<Todonote>?> GetCompletedTodosByUserIdAsync(int userId)
     {
-        var todos = (await _todoRepository.GetAllAsync()).Where(t => t.Userid == userId && t.Completedon != null)
+        var todos = (await _todoRepository.GetAllAsync()).Where(t => t.Userid == userId && t.CompletedOn != null)
             .ToList();
         return todos;
     }

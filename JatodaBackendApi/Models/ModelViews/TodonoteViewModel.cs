@@ -8,5 +8,5 @@ public class TodonoteViewModel
 
     public string Name { get; set; } = null!;
     public DateTime? CompletedOn { get; set; }
-    public IFormFile? file { get; set; }
+    public IFormFile? File { get; set; }
 }

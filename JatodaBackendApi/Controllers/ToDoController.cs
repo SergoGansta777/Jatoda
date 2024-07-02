@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JatodaBackendApi.Controllers;
 
+/// <summary>
+///     Controller for managing ToDo operations.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(AuthenticationSchemes = "Bearer")]
@@ -27,11 +30,15 @@ public class ToDoController : ControllerBase
         _fileProvider = fileProvider;
     }
 
+    /// <summary>
+    ///     Get all ToDo items.
+    /// </summary>
+    /// <returns>List of ToDo items.</returns>
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var todos = await _todoProvider.GetAllTodosAsync();
-        if (todos == null)
+        if (todos is null)
         {
             return Ok(todos);
         }
@@ -40,6 +47,11 @@ public class ToDoController : ControllerBase
         return Ok(mappedTodos);
     }
 
+    /// <summary>
+    ///     Get a specific ToDo item by its ID.
+    /// </summary>
+    /// <param name="id">ID of the ToDo item.</param>
+    /// <returns>ToDo item with the specified ID.</returns>
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -53,60 +65,71 @@ public class ToDoController : ControllerBase
         return Ok(mappedTodo);
     }
 
-    [HttpGet("todos/{userId:int}")]
+    /// <summary>
+    ///     Get all ToDo items for a specific user.
+    /// </summary>
+    /// <param name="userId">ID of the user.</param>
+    /// <returns>List of ToDo items for the user.</returns>
+    [HttpGet("users/{userId:int}/todos")]
     public async Task<IActionResult> GetTodosByUserId(int userId)
     {
         var todos = await _todoProvider.GetTodosByUserIdAsync(userId);
-        if (todos == null)
+        if (todos is null)
         {
             return Ok(todos);
         }
 
-        todos = todos.Where(t => t.Completedon == null).ToList();
+        todos = todos.Where(t => t.CompletedOn == null).ToList();
         var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
         _logger.LogInformation("Retrieved todos from the repository");
         return Ok(mappedTodos);
     }
 
-    [HttpGet("completedtodos/{userId:int}")]
+    /// <summary>
+    ///     Get all completed ToDo items for a specific user.
+    /// </summary>
+    /// <param name="userId">ID of the user.</param>
+    /// <returns>List of completed ToDo items for the user.</returns>
+    [HttpGet("users/{userId:int}/completed-todos")]
     public async Task<IActionResult> GetCompletedTodosByUserId(int userId)
     {
         var todos = await _todoProvider.GetTodosByUserIdAsync(userId);
-        if (todos == null)
+        if (todos is null)
         {
             return Ok(todos);
         }
 
-        todos = todos.Where(t => t.Completedon != null).ToList();
+        todos = todos.Where(t => t.CompletedOn != null).ToList();
         var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
         _logger.LogInformation("Retrieved completed todos from the repository");
         return Ok(mappedTodos);
     }
 
+    /// <summary>
+    ///     Add a new ToDo item.
+    /// </summary>
+    /// <param name="todo">ToDo item data.</param>
+    /// <returns>Created ToDo item.</returns>
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] TodonoteViewModel todo)
     {
-        if (todo.file != null)
+        if (todo.File is not null)
         {
-            await _fileProvider.UploadFileAsync(todo.file);
+            await _fileProvider.UploadFileAsync(todo.File);
         }
 
-        var newTodo = new Todonote
-        {
-            Name = todo.Name,
-            Notes = todo.Notes,
-            Userid = todo.Userid,
-            Difficultylevel = 1,
-            Tags = new List<Tag>(),
-            Multimediafilepath = todo.file?.FileName
-        };
-
+        var newTodo = _mapper.Map<Todonote>(todo);
         var createdTodo = await _todoProvider.AddTodoAsync(newTodo);
         var mappedTodo = _mapper.Map<TodonoteViewModel>(createdTodo);
         return CreatedAtAction(nameof(GetById), new {id = createdTodo.Id}, mappedTodo);
     }
 
-    [HttpGet("fileoftodo/{id:int}")]
+    /// <summary>
+    ///     Download the file attached to a ToDo item.
+    /// </summary>
+    /// <param name="id">ID of the ToDo item.</param>
+    /// <returns>File attached to the ToDo item.</returns>
+    [HttpGet("{id:int}/file")]
     public async Task<IActionResult> GetFile(int id)
     {
         var todo = await _todoProvider.GetTodoByIdAsync(id);
@@ -118,14 +141,20 @@ public class ToDoController : ControllerBase
         var fileName = todo.Multimediafilepath;
         var fileStream = await _fileProvider.GetFileAsync(fileName);
 
-        if (fileStream == null)
+        if (fileStream is null)
         {
             throw new FileWithNameNotFoundException(fileName);
         }
 
-        return File(fileStream, "application/octet-stream"); // return the file
+        return File(fileStream, "application/octet-stream");
     }
 
+    /// <summary>
+    ///     Update an existing ToDo item.
+    /// </summary>
+    /// <param name="id">ID of the ToDo item to update.</param>
+    /// <param name="todo">Updated ToDo item data.</param>
+    /// <returns>No content if successful.</returns>
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] TodonoteViewModel todo)
     {
@@ -134,14 +163,20 @@ public class ToDoController : ControllerBase
         {
             throw new TodoNotFoundException(id);
         }
-        // TODO: convert here
 
+        _mapper.Map(todo, existingTodo);
 
         await _todoProvider.UpdateTodoAsync(existingTodo);
         return NoContent();
     }
 
-    [HttpPut("complete/{id:int}")]
+    /// <summary>
+    ///     Mark a ToDo item as completed.
+    /// </summary>
+    /// <param name="id">ID of the ToDo item to complete.</param>
+    /// <param name="requestModelView">Request data containing the completion date.</param>
+    /// <returns>No content if successful.</returns>
+    [HttpPut("{id:int}/complete")]
     public async Task<IActionResult> Complete(int id, [FromBody] CompleteRequestModelView requestModelView)
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
@@ -156,12 +191,16 @@ public class ToDoController : ControllerBase
             throw new CompleteBadRequestException();
         }
 
-        existingTodo.Completedon = DateTime.Parse(requestModelView.CompletedOn).ToUniversalTime();
+        existingTodo.CompletedOn = DateTime.Parse(requestModelView.CompletedOn).ToUniversalTime();
         await _todoProvider.UpdateTodoAsync(existingTodo);
         return NoContent();
     }
 
-
+    /// <summary>
+    ///     Delete a ToDo item.
+    /// </summary>
+    /// <param name="id">ID of the ToDo item to delete.</param>
+    /// <returns>No content if successful.</returns>
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
