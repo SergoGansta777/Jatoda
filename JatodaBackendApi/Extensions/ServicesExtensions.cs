@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using AspNetCoreRateLimit;
 using JatodaBackendApi.Models.DBModels;
@@ -150,6 +151,10 @@ public static class ServicesExtensions
             };
             c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
             c.AddSecurityRequirement(new OpenApiSecurityRequirement {{securityScheme, Array.Empty<string>()}});
+            
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
         });
     }
 
