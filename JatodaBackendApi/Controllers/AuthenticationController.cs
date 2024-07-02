@@ -30,36 +30,23 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequestModelView? model)
     {
-        if (
-            model == null
-            || string.IsNullOrEmpty(model.Username)
-            || string.IsNullOrEmpty(model.Password)
-        )
+        if (IsInvalidLoginRequest(model))
         {
-            _logger.LogWarning("Invalid payload. Username and Password should not be empty.");
-            return BadRequest("Invalid payload. Username and Password should not be empty.");
+            return HandleInvalidLoginRequest();
         }
 
         var user = await _userProvider.GetByUsernameAsync(model.Username);
-        if (user == null || !BCryptNet.Verify(model.Password, user.Passwordhash))
+        if (!IsValidUser(user, model.Password))
         {
-            _logger.LogWarning("Invalid credentials. Please check your username and password.");
-            return BadRequest("Invalid credentials. Please check your username and password.");
+            return HandleInvalidCredentials();
         }
 
         var token = _tokenService.GenerateToken(user.Id.ToString(), user.Username);
-        Response.Cookies.Append("jwt", token, new CookieOptions {HttpOnly = true});
+        SetAuthCookie(token);
 
         _logger.LogInformation("User {Username} logged in successfully.", user.Username);
 
-        return Ok(
-            new
-            {
-                message = "Login successful",
-                username = user.Username,
-                userid = user.Id
-            }
-        );
+        return Ok(new {message = "Login successful", username = user.Username, userid = user.Id});
     }
 
     [HttpPost("logout")]
@@ -68,61 +55,13 @@ public class AuthenticationController : ControllerBase
     {
         if (Request.Cookies.TryGetValue("jwt", out var token))
         {
-            _tokenService.RevokeToken(token);
-            Response.Cookies.Delete("jwt");
-
+            RevokeUserToken(token);
             _logger.LogInformation($"User with token {token} logged out.");
-
             return Ok();
         }
 
         _logger.LogWarning("No jwt cookie found.");
         return BadRequest("No jwt cookie found.");
-    }
-
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequestModelView? model)
-    {
-        if (
-            model == null
-            || string.IsNullOrWhiteSpace(model.Username)
-            || string.IsNullOrWhiteSpace(model.Email)
-            || string.IsNullOrWhiteSpace(model.Password)
-        )
-        {
-            _logger.LogWarning("Invalid registration payload.");
-            return BadRequest("Invalid payload.");
-        }
-
-        if (await _userProvider.GetByUsernameAsync(model.Username) != null)
-        {
-            _logger.LogWarning("Attempt to register with an existing username.");
-            return BadRequest("Username is already taken");
-        }
-
-        if (await _userProvider.GetByEmailAsync(model.Email) != null)
-        {
-            _logger.LogWarning("Attempt to register with an existing email.");
-            return BadRequest("Email is already in use");
-        }
-
-        var passwordHash = BCryptNet.HashPassword(model.Password);
-        var user = new User
-        {
-            Username = model.Username,
-            Passwordhash = passwordHash,
-            Email = model.Email
-        };
-
-        var createdUser = await _userProvider.AddUserAsync(user);
-
-        _logger.LogInformation("User {Username} registered successfully.", user.Username);
-
-        return CreatedAtAction(
-            nameof(Register),
-            new {id = user.Id},
-            createdUser
-        );
     }
 
     [HttpGet("user")]
@@ -132,7 +71,11 @@ public class AuthenticationController : ControllerBase
         try
         {
             var jwt = Request.Cookies["jwt"];
-            if (jwt == null) return Unauthorized();
+            if (jwt == null)
+            {
+                return Unauthorized();
+            }
+
             var token = _tokenService.ValidateToken(jwt);
             var userId = int.Parse(token.Payload.First(c => c.Key == "nameid").Value.ToString()!);
             var user = await _userProvider.GetByIdAsync(userId);
@@ -148,14 +91,128 @@ public class AuthenticationController : ControllerBase
     [HttpOptions]
     public IActionResult Options()
     {
-        // Set the necessary CORS headers
+        SetCorsHeaders();
+        _logger.LogInformation("Responding to an OPTIONS request.");
+        return NoContent();
+    }
+
+    private static bool IsInvalidLoginRequest(LoginRequestModelView? model)
+    {
+        return model == null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password);
+    }
+
+    private IActionResult HandleInvalidLoginRequest()
+    {
+        const string errorMessage = "Invalid payload. Username and Password should not be empty.";
+        _logger.LogWarning(errorMessage);
+        return BadRequest(errorMessage);
+    }
+
+    private static bool IsValidUser(User? user, string password)
+    {
+        return user != null && BCryptNet.Verify(password, user.Passwordhash);
+    }
+
+    private IActionResult HandleInvalidCredentials()
+    {
+        const string errorMessage = "Invalid credentials. Please check your username and password.";
+        _logger.LogWarning(errorMessage);
+        return BadRequest(errorMessage);
+    }
+
+    private void SetAuthCookie(string token)
+    {
+        var cookieOptions = new CookieOptions {HttpOnly = true};
+        Response.Cookies.Append("jwt", token, cookieOptions);
+    }
+
+
+    private void RevokeUserToken(string token)
+    {
+        _tokenService.RevokeToken(token);
+        Response.Cookies.Delete("jwt");
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequestModelView? model)
+    {
+        if (IsInvalidRegistrationRequest(model))
+        {
+            return HandleInvalidRegistrationPayload();
+        }
+
+        if (await IsUsernameTaken(model.Username))
+        {
+            return HandleUsernameAlreadyTaken();
+        }
+
+        if (await IsEmailTaken(model.Email))
+        {
+            return HandleEmailAlreadyInUse();
+        }
+
+        var createdUser = await CreateUser(model);
+
+        _logger.LogInformation("User {Username} registered successfully.", createdUser.Username);
+
+        return CreatedAtAction(nameof(Register), new {id = createdUser.Id}, createdUser);
+    }
+
+    private bool IsInvalidRegistrationRequest(RegisterRequestModelView? model)
+    {
+        return model == null
+               || string.IsNullOrWhiteSpace(model.Username)
+               || string.IsNullOrWhiteSpace(model.Email)
+               || string.IsNullOrWhiteSpace(model.Password);
+    }
+
+    private IActionResult HandleInvalidRegistrationPayload()
+    {
+        const string errorMessage = "Invalid registration payload.";
+        _logger.LogWarning(errorMessage);
+        return BadRequest("Invalid payload.");
+    }
+
+    private async Task<bool> IsUsernameTaken(string username)
+    {
+        return await _userProvider.GetByUsernameAsync(username) != null;
+    }
+
+    private IActionResult HandleUsernameAlreadyTaken()
+    {
+        const string errorMessage = "Username is already taken";
+        _logger.LogWarning(errorMessage);
+        return BadRequest(errorMessage);
+    }
+
+    private async Task<bool> IsEmailTaken(string email)
+    {
+        return await _userProvider.GetByEmailAsync(email) != null;
+    }
+
+    private IActionResult HandleEmailAlreadyInUse()
+    {
+        const string errorMessage = "Email is already in use";
+        _logger.LogWarning(errorMessage);
+        return BadRequest(errorMessage);
+    }
+
+    private async Task<User> CreateUser(RegisterRequestModelView model)
+    {
+        var passwordHash = BCryptNet.HashPassword(model.Password);
+        var user = new User
+        {
+            Username = model.Username,
+            Passwordhash = passwordHash,
+            Email = model.Email
+        };
+        return await _userProvider.AddUserAsync(user);
+    }
+
+    private void SetCorsHeaders()
+    {
         Response.Headers.Add("Access-Control-Allow-Origin", "*");
         Response.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
         Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-        _logger.LogInformation("Responding to an OPTIONS request.");
-
-        // Return a 204 No Content response
-        return NoContent();
     }
 }
