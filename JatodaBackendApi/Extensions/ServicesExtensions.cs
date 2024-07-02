@@ -94,6 +94,7 @@ public static class ServicesExtensions
         services.AddMemoryCache();
         services.AddDistributedMemoryCache();
         services.AddHttpContextAccessor();
+        services.AddControllers();
     }
 
     private static void RegisterAuthentication(IServiceCollection services, IConfiguration configuration)
