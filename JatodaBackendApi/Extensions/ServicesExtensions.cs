@@ -30,6 +30,8 @@ public static class ServicesExtensions
 {
     public static void RegisterServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.RegisterAutoMapper();
+        
         RegisterDbContext(services, configuration);
         RegisterCacheServices(services, configuration);
         RegisterRateLimiting(services, configuration);
