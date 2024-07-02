@@ -1,18 +1,35 @@
-using JatodaBackendApi;
+using AspNetCoreRateLimit;
+using JatodaBackendApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container from the Startup class
-builder.Host.ConfigureServices(
-    Startup.ConfigureServices
-);
-
-// Add configuration sources
 builder.Configuration.AddJsonFile("appsettings.json");
+builder.Host.ConfigureServices((context, services) =>
+{
+    services.RegisterServices(context.Configuration);
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
-Startup.Configure(app, app.Environment);
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Just Another ToDo App API V1");
+});
+
+app.UseHttpsRedirection();
+app.UseIpRateLimiting();
+app.UseRouting();
+app.UseAuthorization();
+app.UseAuthentication();
+app.UseCors(options => options
+    .WithOrigins("http://localhost:3000", "http://localhost:8080", "http://localhost:4200")
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()
+);
+
+app.ConfigureExceptionHandler(app.Services.GetRequiredService<ILogger<Program>>());
+app.MapControllers();
 
 app.Run();
