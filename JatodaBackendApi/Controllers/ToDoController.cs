@@ -14,11 +14,11 @@ namespace JatodaBackendApi.Controllers;
 public class ToDoController : ControllerBase
 {
     private readonly IFileProvider _fileProvider;
-    private readonly ILogger<AuthenticationController> _logger;
+    private readonly ILogger<ToDoController> _logger;
     private readonly IMapper _mapper;
     private readonly ITodoProvider<Todonote> _todoProvider;
 
-    public ToDoController(ITodoProvider<Todonote> todoProvider, ILogger<AuthenticationController> logger,
+    public ToDoController(ITodoProvider<Todonote> todoProvider, ILogger<ToDoController> logger,
         IMapper mapper, IFileProvider fileProvider)
     {
         _todoProvider = todoProvider;
@@ -31,7 +31,11 @@ public class ToDoController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var todos = await _todoProvider.GetAllTodosAsync();
-        if (todos == null) return Ok(todos);
+        if (todos == null)
+        {
+            return Ok(todos);
+        }
+
         var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
         return Ok(mappedTodos);
     }
@@ -41,7 +45,10 @@ public class ToDoController : ControllerBase
     {
         var todo = await _todoProvider.GetTodoByIdAsync(id);
         if (todo is null)
+        {
             throw new TodoNotFoundException(id);
+        }
+
         var mappedTodo = _mapper.Map<TodonoteViewModel>(todo);
         return Ok(mappedTodo);
     }
@@ -50,7 +57,11 @@ public class ToDoController : ControllerBase
     public async Task<IActionResult> GetTodosByUserId(int userId)
     {
         var todos = await _todoProvider.GetTodosByUserIdAsync(userId);
-        if (todos == null) return Ok(todos);
+        if (todos == null)
+        {
+            return Ok(todos);
+        }
+
         todos = todos.Where(t => t.Completedon == null).ToList();
         var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
         _logger.LogInformation("Retrieved todos from the repository");
@@ -61,7 +72,11 @@ public class ToDoController : ControllerBase
     public async Task<IActionResult> GetCompletedTodosByUserId(int userId)
     {
         var todos = await _todoProvider.GetTodosByUserIdAsync(userId);
-        if (todos == null) return Ok(todos);
+        if (todos == null)
+        {
+            return Ok(todos);
+        }
+
         todos = todos.Where(t => t.Completedon != null).ToList();
         var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
         _logger.LogInformation("Retrieved completed todos from the repository");
@@ -71,7 +86,10 @@ public class ToDoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] TodonoteViewModel todo)
     {
-        if (todo.file != null) await _fileProvider.UploadFileAsync(todo.file);
+        if (todo.file != null)
+        {
+            await _fileProvider.UploadFileAsync(todo.file);
+        }
 
         var newTodo = new Todonote
         {
@@ -93,13 +111,17 @@ public class ToDoController : ControllerBase
     {
         var todo = await _todoProvider.GetTodoByIdAsync(id);
         if (todo is null)
+        {
             throw new TodoNotFoundException(id);
+        }
 
         var fileName = todo.Multimediafilepath;
         var fileStream = await _fileProvider.GetFileAsync(fileName);
 
         if (fileStream == null)
+        {
             throw new FileWithNameNotFoundException(fileName);
+        }
 
         return File(fileStream, "application/octet-stream"); // return the file
     }
@@ -109,7 +131,9 @@ public class ToDoController : ControllerBase
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
         if (existingTodo is null)
+        {
             throw new TodoNotFoundException(id);
+        }
         // TODO: convert here
 
 
@@ -123,9 +147,14 @@ public class ToDoController : ControllerBase
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
 
         if (existingTodo is null)
+        {
             throw new TodoNotFoundException(id);
+        }
+
         if (requestModelView.CompletedOn is null)
+        {
             throw new CompleteBadRequestException();
+        }
 
         existingTodo.Completedon = DateTime.Parse(requestModelView.CompletedOn).ToUniversalTime();
         await _todoProvider.UpdateTodoAsync(existingTodo);
@@ -138,7 +167,9 @@ public class ToDoController : ControllerBase
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
         if (existingTodo is null)
+        {
             throw new TodoNotFoundException(id);
+        }
 
         await _todoProvider.DeleteTodoAsync(existingTodo);
         return NoContent();
