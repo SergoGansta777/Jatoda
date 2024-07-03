@@ -8,6 +8,7 @@ namespace JatodaBackendApi.Services.MinIoService;
 
 public class MinioService : IMinioService
 {
+    private const int HourInSeconds = 3600;
     private readonly MinioClient? _minioClient;
 
     public MinioService(IOptions<MinioOptions> minioOptions)
