@@ -37,7 +37,7 @@ public class AuthService : IAuthService
             return HandleInvalidCredentials();
         }
 
-        var token = _tokenService.GenerateToken(user.Id.ToString(), user.Username);
+        var token = _tokenService.GenerateToken(user?.Id.ToString(), user?.Username);
         SetAuthCookie(token);
 
         _logger.LogInformation("User {Username} logged in successfully.", user.Username);
@@ -50,7 +50,7 @@ public class AuthService : IAuthService
         if (_httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("jwt", out var token))
         {
             RevokeUserToken(token);
-            _logger.LogInformation($"User with token {token} logged out.");
+            _logger.LogInformation("User with token {token} logged out.", token);
             return new OkResult();
         }
 
@@ -65,7 +65,7 @@ public class AuthService : IAuthService
             return HandleInvalidRegistrationPayload();
         }
 
-        if (await IsUsernameTaken(model.Username))
+        if (await IsUsernameTaken(model!.Username))
         {
             return HandleUsernameAlreadyTaken();
         }
@@ -85,7 +85,7 @@ public class AuthService : IAuthService
     {
         try
         {
-            var jwt = _httpContextAccessor.HttpContext.Request.Cookies["jwt"];
+            var jwt = _httpContextAccessor.HttpContext?.Request.Cookies["jwt"];
             if (jwt == null)
             {
                 return new UnauthorizedResult();
@@ -103,7 +103,7 @@ public class AuthService : IAuthService
         }
     }
 
-    private bool IsInvalidLoginRequest(LoginRequestModelView? model)
+    private static bool IsInvalidLoginRequest(LoginRequestModelView? model)
     {
         return model == null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password);
     }
@@ -115,12 +115,12 @@ public class AuthService : IAuthService
         return new BadRequestObjectResult(errorMessage);
     }
 
-    private bool IsValidUser(User? user, string password)
+    private static bool IsValidUser(User? user, string password)
     {
         return user != null && BCryptNet.Verify(password, user.Passwordhash);
     }
 
-    private IActionResult HandleInvalidCredentials()
+    private BadRequestObjectResult HandleInvalidCredentials()
     {
         const string errorMessage = "Invalid credentials. Please check your username and password.";
         _logger.LogWarning(errorMessage);
@@ -136,10 +136,10 @@ public class AuthService : IAuthService
     private void RevokeUserToken(string token)
     {
         _tokenService.RevokeToken(token);
-        _httpContextAccessor.HttpContext.Response.Cookies.Delete("jwt");
+        _httpContextAccessor.HttpContext?.Response.Cookies.Delete("jwt");
     }
 
-    private bool IsInvalidRegistrationRequest(RegisterRequestModelView? model)
+    private static bool IsInvalidRegistrationRequest(RegisterRequestModelView? model)
     {
         return model == null || string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Email) ||
                string.IsNullOrWhiteSpace(model.Password);
@@ -152,27 +152,29 @@ public class AuthService : IAuthService
         return new BadRequestObjectResult("Invalid payload.");
     }
 
-    private async Task<bool> IsUsernameTaken(string username)
+    private async Task<bool> IsUsernameTaken(string? username)
     {
-        return await _userProvider.GetByUsernameAsync(username) != null;
+        return await _userProvider.GetByUsernameAsync(username) is not null;
     }
 
-    private IActionResult HandleUsernameAlreadyTaken()
+    private BadRequestObjectResult HandleUsernameAlreadyTaken()
     {
         const string errorMessage = "Username is already taken";
         _logger.LogWarning(errorMessage);
+        
         return new BadRequestObjectResult(errorMessage);
     }
 
-    private async Task<bool> IsEmailTaken(string email)
+    private async Task<bool> IsEmailTaken(string? email)
     {
-        return await _userProvider.GetByEmailAsync(email) != null;
+        return await _userProvider.GetByEmailAsync(email) is not null;
     }
 
-    private IActionResult HandleEmailAlreadyInUse()
+    private BadRequestObjectResult HandleEmailAlreadyInUse()
     {
         const string errorMessage = "Email is already in use";
         _logger.LogWarning(errorMessage);
+        
         return new BadRequestObjectResult(errorMessage);
     }
 
@@ -185,6 +187,7 @@ public class AuthService : IAuthService
             Passwordhash = passwordHash,
             Email = model.Email
         };
+        
         return await _userProvider.AddUserAsync(user);
     }
 }

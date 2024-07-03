@@ -40,7 +40,7 @@ public static class ServicesExtensions
         RegisterScopedServices(services);
         RegisterOptions(services);
         RegisterAuthentication(services, configuration);
-        RegisterSwagger(services, configuration);
+        RegisterSwagger(services);
         RegisterMiscellaneous(services);
     }
 
@@ -53,7 +53,7 @@ public static class ServicesExtensions
     private static void RegisterCacheServices(IServiceCollection services, IConfiguration configuration)
     {
         var cacheConnectionString = configuration.GetConnectionString("CacheConnection");
-        services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(cacheConnectionString));
+        services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(cacheConnectionString!));
         services.AddSingleton<ICacheRepository, CacheRepository>();
         services.AddSingleton<ICacheService, CacheService>();
         services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
@@ -132,7 +132,7 @@ public static class ServicesExtensions
             });
     }
 
-    private static void RegisterSwagger(IServiceCollection services, IConfiguration configuration)
+    private static void RegisterSwagger(IServiceCollection services)
     {
         services.AddSwaggerGen(c =>
         {

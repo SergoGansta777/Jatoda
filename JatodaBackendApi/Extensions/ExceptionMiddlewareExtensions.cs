@@ -25,7 +25,7 @@ public static class ExceptionMiddlewareExtensions
                         _ => StatusCodes.Status500InternalServerError
                     };
 
-                    logger.LogError($"Something went wrong: {contextFeature.Error}");
+                    logger.LogError("Something went wrong: {errorDetails}", contextFeature.Error);
 
                     await context.Response.WriteAsync(new ErrorDetails
                     {

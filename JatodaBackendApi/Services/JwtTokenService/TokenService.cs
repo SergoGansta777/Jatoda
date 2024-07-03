@@ -17,7 +17,7 @@ public class TokenService : ITokenService
         _revokedToken = new List<string?>();
     }
 
-    public string GenerateToken(string userId, string? username)
+    public string GenerateToken(string? userId, string? username)
     {
         try
         {
@@ -29,7 +29,16 @@ public class TokenService : ITokenService
                 ? expiry
                 : 7;
             var secretKey = _configuration["Jwt:SecretKey"];
-            if (string.IsNullOrEmpty(secretKey)) throw new InvalidOperationException("Secret key must be provided.");
+            if (string.IsNullOrEmpty(secretKey))
+            {
+                throw new InvalidOperationException("Secret key must be provided.");
+            }
+
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentException("Empty user id or username");
+            }
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(
@@ -57,11 +66,22 @@ public class TokenService : ITokenService
 
     public JwtSecurityToken ValidateToken(string? token)
     {
-        if (string.IsNullOrEmpty(token)) throw new ArgumentNullException(nameof(token));
-        if (_revokedToken.Contains(token)) throw new SecurityTokenException("Token revoked.");
+        if (string.IsNullOrEmpty(token))
+        {
+            throw new ArgumentNullException(nameof(token));
+        }
+
+        if (_revokedToken.Contains(token))
+        {
+            throw new SecurityTokenException("Token revoked.");
+        }
+
         var tokenHandler = new JwtSecurityTokenHandler();
 
-        if (!tokenHandler.CanReadToken(token)) throw new ArgumentException("Invalid JWT token format.");
+        if (!tokenHandler.CanReadToken(token))
+        {
+            throw new ArgumentException("Invalid JWT token format.");
+        }
 
         var validationParameters = new TokenValidationParameters
         {
@@ -89,7 +109,9 @@ public class TokenService : ITokenService
                     StringComparison.InvariantCultureIgnoreCase
                 )
             )
+            {
                 throw new ArgumentException("Invalid JWT token encryption.");
+            }
 
             return jwtToken;
         }

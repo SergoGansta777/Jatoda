@@ -139,11 +139,11 @@ public class ToDoController : ControllerBase
         }
 
         var fileName = todo.Multimediafilepath;
-        var fileStream = await _fileProvider.GetFileAsync(fileName);
+        var fileStream = await _fileProvider.GetFileAsync(fileName!);
 
         if (fileStream is null)
         {
-            throw new FileWithNameNotFoundException(fileName);
+            throw new FileWithNameNotFoundException(fileName!);
         }
 
         return File(fileStream, "application/octet-stream");

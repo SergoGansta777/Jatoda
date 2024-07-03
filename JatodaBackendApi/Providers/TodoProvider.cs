@@ -39,12 +39,12 @@ public class TodoProvider : ITodoProvider<Todonote>
             todo = await _todoRepository.GetByIdAsync(id);
             await _cacheService.SetCacheAsync(cacheKey, todo, DefaultTimeForCache);
             _logger.LogInformation(
-                $"Retrieved todo with id {id} from the repository and set it in the cache"
+                "Retrieved todo with id {id} from the repository and set it in the cache", id
             );
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error retrieving todo with id {id} from the repository");
+            _logger.LogError(ex, "Error retrieving todo with id {id} from the repository", id);
         }
 
         return todo;
@@ -61,7 +61,7 @@ public class TodoProvider : ITodoProvider<Todonote>
             createdTodo,
             DefaultTimeForCache
         );
-        _logger.LogInformation($"Added new todo with id {createdTodo.Id} and set it in the cache");
+        _logger.LogInformation("Added new todo with id {createdId} and set it in the cache", createdTodo.Id);
 
         return createdTodo;
     }
@@ -72,14 +72,14 @@ public class TodoProvider : ITodoProvider<Todonote>
 
         await _todoRepository.UpdateAsync(todo);
         await _cacheService.RemoveFromCacheAsync($"todo:{todo.Id}");
-        _logger.LogInformation($"Updated todo with id {todo.Id} and removed it from the cache");
+        _logger.LogInformation("Updated todo with id {id} and removed it from the cache", todo.Id);
     }
 
     public async Task DeleteTodoAsync(Todonote todo)
     {
         await _todoRepository.DeleteAsync(todo);
         await _cacheService.RemoveFromCacheAsync($"todo:{todo.Id}");
-        _logger.LogInformation($"Deleted todo with id {todo.Id} and removed it from the cache");
+        _logger.LogInformation("Deleted todo with id {id} and removed it from the cache", todo.Id);
     }
 
     public async Task<List<Todonote>?> GetTodosByUserIdAsync(int userId)
