@@ -70,22 +70,4 @@ public class AuthController : ControllerBase
     {
         return await _authService.GetUserByToken();
     }
-
-    /// <summary>
-    ///     Responds to an OPTIONS request with the allowed methods and headers.
-    /// </summary>
-    /// <returns>A 204 No Content response with the necessary CORS headers.</returns>
-    [HttpOptions]
-    public IActionResult Options()
-    {
-        SetCorsHeaders();
-        return NoContent();
-    }
-
-    private void SetCorsHeaders()
-    {
-        Response.Headers.Append("Access-Control-Allow-Origin", "*");
-        Response.Headers.Append("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-        Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    }
 }
