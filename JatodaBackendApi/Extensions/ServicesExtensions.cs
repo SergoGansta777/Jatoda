@@ -19,6 +19,7 @@ using JatodaBackendApi.Services.MinIoService;
 using JatodaBackendApi.Services.MinIoService.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Minio;
@@ -31,29 +32,28 @@ public static class ServicesExtensions
     public static void RegisterServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.RegisterAutoMapper();
-
-        RegisterDbContext(services, configuration);
-        RegisterCacheServices(services, configuration);
-        RegisterRateLimiting(services, configuration);
-        RegisterMinio(services, configuration);
-        RegisterRepositories(services);
-        RegisterScopedServices(services);
-        RegisterOptions(services);
-        RegisterAuthentication(services, configuration);
-        RegisterSwagger(services);
-        RegisterMiscellaneous(services);
+        services.RegisterDatabase(configuration);
+        services.RegisterCache(configuration);
+        services.RegisterRateLimiting(configuration);
+        services.RegisterMinio(configuration);
+        services.RegisterRepositories();
+        services.RegisterScopedServices();
+        services.RegisterOptions();
+        services.RegisterAuthentication(configuration);
+        services.RegisterSwagger();
+        services.RegisterMiscellaneous();
     }
 
-    private static void RegisterDbContext(IServiceCollection services, IConfiguration configuration)
+    private static void RegisterDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionStringSql = configuration.GetConnectionString("DbConnection");
-        services.AddDbContext<JatodaContext>(options => options.UseNpgsql(connectionStringSql));
+        var connectionString = configuration.GetConnectionString("DbConnection");
+        services.AddDbContext<JatodaContext>(options => options.UseNpgsql(connectionString));
     }
 
-    private static void RegisterCacheServices(IServiceCollection services, IConfiguration configuration)
+    private static void RegisterCache(this IServiceCollection services, IConfiguration configuration)
     {
         var cacheConnectionString = configuration.GetConnectionString("CacheConnection");
-        services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(cacheConnectionString!));
+        services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(cacheConnectionString!));
         services.AddSingleton<ICacheRepository, CacheRepository>();
         services.AddSingleton<ICacheService, CacheService>();
         services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
@@ -62,26 +62,33 @@ public static class ServicesExtensions
         services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
     }
 
-    private static void RegisterRateLimiting(IServiceCollection services, IConfiguration configuration)
+    private static void RegisterRateLimiting(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
         services.Configure<IpRateLimitPolicies>(configuration.GetSection("IpRateLimitPolicies"));
     }
 
-    private static void RegisterMinio(IServiceCollection services, IConfiguration configuration)
+    private static void RegisterMinio(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<MinioOptions>(configuration.GetSection("Minio"));
-        services.AddSingleton<IMinioClient, MinioClient>();
+        services.AddSingleton<IMinioClient>(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<MinioOptions>>().Value;
+            return new MinioClient()
+                .WithEndpoint(options.Endpoint)
+                .WithCredentials(options.AccessKey, options.SecretKey)
+                .Build();
+        });
     }
 
-    private static void RegisterRepositories(IServiceCollection services)
+    private static void RegisterRepositories(this IServiceCollection services)
     {
         services.AddScoped<IRepository<Todonote>, ToDoRepository>();
         services.AddScoped<IRepository<User>, UserRepository>();
         services.AddScoped<IRepository<Tag>, TagRepository>();
     }
 
-    private static void RegisterScopedServices(IServiceCollection services)
+    private static void RegisterScopedServices(this IServiceCollection services)
     {
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ITodoProvider<Todonote>, TodoProvider>();
@@ -91,7 +98,7 @@ public static class ServicesExtensions
         services.AddScoped<IFileProvider, FileProvider>();
     }
 
-    private static void RegisterOptions(IServiceCollection services)
+    private static void RegisterOptions(this IServiceCollection services)
     {
         services.AddOptions();
         services.AddMemoryCache();
@@ -101,10 +108,11 @@ public static class ServicesExtensions
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
     }
 
-    private static void RegisterAuthentication(IServiceCollection services, IConfiguration configuration)
+    private static void RegisterAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        services
-            .AddAuthentication(options =>
+        var jwtSecretKey = Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]!);
+
+        services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -117,9 +125,7 @@ public static class ServicesExtensions
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]!)
-                    )
+                    IssuerSigningKey = new SymmetricSecurityKey(jwtSecretKey)
                 };
                 options.Events = new JwtBearerEvents
                 {
@@ -132,7 +138,7 @@ public static class ServicesExtensions
             });
     }
 
-    private static void RegisterSwagger(IServiceCollection services)
+    private static void RegisterSwagger(this IServiceCollection services)
     {
         services.AddSwaggerGen(c =>
         {
@@ -152,8 +158,12 @@ public static class ServicesExtensions
                     Type = ReferenceType.SecurityScheme
                 }
             };
+
             c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement {{securityScheme, Array.Empty<string>()}});
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {securityScheme, Array.Empty<string>()}
+            });
 
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -161,7 +171,7 @@ public static class ServicesExtensions
         });
     }
 
-    private static void RegisterMiscellaneous(IServiceCollection services)
+    private static void RegisterMiscellaneous(this IServiceCollection services)
     {
         services.AddCors(options =>
         {

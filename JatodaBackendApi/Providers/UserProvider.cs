@@ -30,6 +30,7 @@ public class UserProvider : IUserProvider<User>
         user = (await _userRepository.GetAllAsync()).FirstOrDefault(
             u => u.Username == username
         );
+        
         if (user is not null)
         {
             await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
