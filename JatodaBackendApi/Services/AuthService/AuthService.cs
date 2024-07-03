@@ -86,7 +86,7 @@ public class AuthService : IAuthService
         try
         {
             var jwt = _httpContextAccessor.HttpContext?.Request.Cookies["jwt"];
-            if (jwt == null)
+            if (jwt is null)
             {
                 return new UnauthorizedResult();
             }
@@ -105,7 +105,7 @@ public class AuthService : IAuthService
 
     private static bool IsInvalidLoginRequest(LoginRequestModelView? model)
     {
-        return model == null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password);
+        return model is null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password);
     }
 
     private IActionResult HandleInvalidLoginRequest()
@@ -117,7 +117,7 @@ public class AuthService : IAuthService
 
     private static bool IsValidUser(User? user, string password)
     {
-        return user != null && BCryptNet.Verify(password, user.Passwordhash);
+        return user is not null && BCryptNet.Verify(password, user.Passwordhash);
     }
 
     private BadRequestObjectResult HandleInvalidCredentials()
@@ -130,7 +130,7 @@ public class AuthService : IAuthService
     private void SetAuthCookie(string token)
     {
         var cookieOptions = new CookieOptions {HttpOnly = true};
-        _httpContextAccessor.HttpContext.Response.Cookies.Append("jwt", token, cookieOptions);
+        _httpContextAccessor.HttpContext?.Response.Cookies.Append("jwt", token, cookieOptions);
     }
 
     private void RevokeUserToken(string token)
@@ -141,7 +141,7 @@ public class AuthService : IAuthService
 
     private static bool IsInvalidRegistrationRequest(RegisterRequestModelView? model)
     {
-        return model == null || string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Email) ||
+        return model is null || string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Email) ||
                string.IsNullOrWhiteSpace(model.Password);
     }
 
@@ -161,7 +161,7 @@ public class AuthService : IAuthService
     {
         const string errorMessage = "Username is already taken";
         _logger.LogWarning(errorMessage);
-        
+
         return new BadRequestObjectResult(errorMessage);
     }
 
@@ -174,7 +174,7 @@ public class AuthService : IAuthService
     {
         const string errorMessage = "Email is already in use";
         _logger.LogWarning(errorMessage);
-        
+
         return new BadRequestObjectResult(errorMessage);
     }
 
@@ -187,7 +187,7 @@ public class AuthService : IAuthService
             Passwordhash = passwordHash,
             Email = model.Email
         };
-        
+
         return await _userProvider.AddUserAsync(user);
     }
 }

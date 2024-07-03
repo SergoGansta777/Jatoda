@@ -4,18 +4,12 @@ using JatodaBackendApi.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("appsettings.json");
-builder.Host.ConfigureServices((context, services) =>
-{
-    services.RegisterServices(context.Configuration);
-});
+builder.Host.ConfigureServices((context, services) => { services.RegisterServices(context.Configuration); });
 
 var app = builder.Build();
 
 app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Just Another ToDo App API V1");
-});
+app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Just Another ToDo App API V1"); });
 
 app.UseHttpsRedirection();
 app.UseIpRateLimiting();

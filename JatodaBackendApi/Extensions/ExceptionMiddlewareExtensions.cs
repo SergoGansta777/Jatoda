@@ -17,7 +17,7 @@ public static class ExceptionMiddlewareExtensions
                 context.Response.ContentType = "application/json";
 
                 var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
-                if (contextFeature != null)
+                if (contextFeature is not null)
                 {
                     context.Response.StatusCode = contextFeature.Error switch
                     {

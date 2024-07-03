@@ -31,7 +31,7 @@ public static class ServicesExtensions
     public static void RegisterServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.RegisterAutoMapper();
-        
+
         RegisterDbContext(services, configuration);
         RegisterCacheServices(services, configuration);
         RegisterRateLimiting(services, configuration);
@@ -98,7 +98,7 @@ public static class ServicesExtensions
         services.AddDistributedMemoryCache();
         services.AddHttpContextAccessor();
         services.AddControllers();
-        services.Configure<RouteOptions>(options => options.LowercaseUrls = true); 
+        services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
     }
 
     private static void RegisterAuthentication(IServiceCollection services, IConfiguration configuration)
@@ -154,7 +154,7 @@ public static class ServicesExtensions
             };
             c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
             c.AddSecurityRequirement(new OpenApiSecurityRequirement {{securityScheme, Array.Empty<string>()}});
-            
+
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);

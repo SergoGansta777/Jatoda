@@ -79,7 +79,7 @@ public class ToDoController : ControllerBase
             return Ok(todos);
         }
 
-        todos = todos.Where(t => t.CompletedOn == null).ToList();
+        todos = todos.Where(t => t.CompletedOn is null).ToList();
         var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
         _logger.LogInformation("Retrieved todos from the repository");
         return Ok(mappedTodos);
@@ -99,7 +99,7 @@ public class ToDoController : ControllerBase
             return Ok(todos);
         }
 
-        todos = todos.Where(t => t.CompletedOn != null).ToList();
+        todos = todos.Where(t => t.CompletedOn is not null).ToList();
         var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
         _logger.LogInformation("Retrieved completed todos from the repository");
         return Ok(mappedTodos);

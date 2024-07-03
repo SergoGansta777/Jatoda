@@ -33,7 +33,11 @@ public class TodoProvider : ITodoProvider<Todonote>
     {
         var cacheKey = $"todo:{id}";
         var todo = await _cacheService.GetFromCacheAsync<Todonote>(cacheKey);
-        if (todo != null) return todo;
+        if (todo is not null)
+        {
+            return todo;
+        }
+
         try
         {
             todo = await _todoRepository.GetByIdAsync(id);
@@ -90,7 +94,7 @@ public class TodoProvider : ITodoProvider<Todonote>
 
     public async Task<List<Todonote>?> GetCompletedTodosByUserIdAsync(int userId)
     {
-        var todos = (await _todoRepository.GetAllAsync()).Where(t => t.Userid == userId && t.CompletedOn != null)
+        var todos = (await _todoRepository.GetAllAsync()).Where(t => t.Userid == userId && t.CompletedOn is not null)
             .ToList();
         return todos;
     }
