@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using AspNetCoreRateLimit;
+using JatodaBackendApi.Factories;
 using JatodaBackendApi.Models.DBModels;
 using JatodaBackendApi.Options;
 using JatodaBackendApi.Providers;
@@ -53,7 +54,7 @@ public static class ServicesExtensions
     private static void RegisterCache(this IServiceCollection services, IConfiguration configuration)
     {
         var cacheConnectionString = configuration.GetConnectionString("CacheConnection");
-        services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(cacheConnectionString!));
+        services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(cacheConnectionString!));
         services.AddSingleton<ICacheRepository, CacheRepository>();
         services.AddSingleton<ICacheService, CacheService>();
         services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
@@ -83,7 +84,7 @@ public static class ServicesExtensions
 
     private static void RegisterRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IRepository<Todonote>, ToDoRepository>();
+        services.AddScoped<IRepository<Todo>, ToDoRepository>();
         services.AddScoped<IRepository<User>, UserRepository>();
         services.AddScoped<IRepository<Tag>, TagRepository>();
     }
@@ -91,7 +92,7 @@ public static class ServicesExtensions
     private static void RegisterScopedServices(this IServiceCollection services)
     {
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<ITodoProvider<Todonote>, TodoProvider>();
+        services.AddScoped<ITodoProvider<Todo>, TodoProvider>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserProvider<User>, UserProvider>();
         services.AddScoped<IMinioService, MinioService>();

@@ -117,7 +117,7 @@ public class AuthService : IAuthService
 
     private static bool IsValidUser(User? user, string password)
     {
-        return user is not null && BCryptNet.Verify(password, user.Passwordhash);
+        return user is not null && BCryptNet.Verify(password, user.PasswordHash);
     }
 
     private BadRequestObjectResult HandleInvalidCredentials()
@@ -184,7 +184,7 @@ public class AuthService : IAuthService
         var user = new User
         {
             Username = model.Username,
-            Passwordhash = passwordHash,
+            PasswordHash = passwordHash,
             Email = model.Email
         };
 

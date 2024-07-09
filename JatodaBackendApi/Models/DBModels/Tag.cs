@@ -1,10 +1,14 @@
-﻿namespace JatodaBackendApi.Models.DBModels;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JatodaBackendApi.Models.DBModels;
 
 public class Tag
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
-    public string Name { get; set; } = null!;
+    [Required(ErrorMessage = "Tag name is required field")]
+    [MaxLength(10, ErrorMessage = "Maximum length for the Name of tag is 10 characters.")]
+    public string Name { get; set; }
 
-    public virtual ICollection<Todonote> Todonotes { get; set; } = new List<Todonote>();
+    public virtual ICollection<Todo> Todos { get; set; }
 }

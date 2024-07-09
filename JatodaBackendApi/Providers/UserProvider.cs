@@ -60,8 +60,8 @@ public class UserProvider : IUserProvider<User>
 
     public async Task<User> AddUserAsync(User user)
     {
-        user.Createdat = DateTime.Now.ToUniversalTime();
-        user.Updatedat = DateTime.Now.ToUniversalTime();
+        user.CreateDate = DateTime.Now.ToUniversalTime();
+        user.UpdateDate = DateTime.Now.ToUniversalTime();
 
         await _userRepository.CreateAsync(user);
         return user;

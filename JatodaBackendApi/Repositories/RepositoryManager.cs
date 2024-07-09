@@ -1,0 +1,17 @@
+using JatodaBackendApi.Factories;
+using JatodaBackendApi.Repositories.Interfaces;
+
+namespace JatodaBackendApi.Repositories;
+
+public sealed class RepositoryManager(JatodaContext context) : IRepositoryManager
+{
+    private readonly Lazy<IToDoRepository> _todoRepository = new(() => new ToDoRepository(context));
+    private readonly Lazy<IUserRepository> _userRepository = new(() => new UserRepository(context));
+    private readonly Lazy<ITagRepository> _tagRepository = new(() => new TagRepository(context));
+
+    public ITagRepository Tag => _tagRepository.Value;
+    public IUserRepository User => _userRepository.Value;
+    public IToDoRepository Todo => _todoRepository.Value;
+
+    public void Save() => context.SaveChanges();
+}

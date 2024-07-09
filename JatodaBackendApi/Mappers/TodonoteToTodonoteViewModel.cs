@@ -8,7 +8,7 @@ public class TodonoteToTodonoteViewModel : Profile
 {
     public TodonoteToTodonoteViewModel()
     {
-        CreateMap<Todonote, TodonoteViewModel>()
-            .ForMember(d => d.File, m => m.MapFrom(w => w.Multimediafilepath));
+        CreateMap<Todo, TodonoteViewModel>()
+            .ForMember(d => d.File, m => m.MapFrom(w => w.MultimediaFilePath));
     }
 }

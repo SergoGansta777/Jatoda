@@ -1,44 +1,32 @@
+using JatodaBackendApi.Factories;
 using JatodaBackendApi.Models.DBModels;
-using JatodaBackendApi.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace JatodaBackendApi.Repositories;
 
-public class ToDoRepository : IRepository<Todonote>
+public class ToDoRepository(JatodaContext context) : RepositoryBase<Todo>(context), IToDoRepository
 {
-    private readonly JatodaContext _context;
+    private readonly JatodaContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    
+    public async Task<IEnumerable<Todo>> GetAllTodosAsync(bool trackChanges) =>
+        await FindAll(trackChanges)
+            .OrderBy(c => c.Name)
+            .ToListAsync();
 
-    public ToDoRepository(JatodaContext context)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
+    public async Task<Todo?> GetTodoAsync(Guid todoId, bool trackChanges) =>
+        await FindByCondition(c => c.Id.Equals(todoId), trackChanges)
+            .SingleOrDefaultAsync();
 
-    public async Task<IEnumerable<Todonote>> GetAllAsync()
-    {
-        return await _context.Todonotes.ToListAsync();
-    }
+    public void CreateTodo(Todo todo) => Create(todo);
 
-    public async Task<Todonote?> GetByIdAsync(int id)
-    {
-        return await _context.Todonotes.FindAsync(id);
-    }
+    public async Task<IEnumerable<Todo>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges) =>
+        await FindByCondition(x => ids.Contains(x.Id), trackChanges)
+            .ToListAsync();
+    
+    public async Task<IEnumerable<Todo>> GetByUserIdAsync(Guid userId, bool trackChanges) =>
+        await FindByCondition(x => x.UserId == userId, trackChanges)
+            .ToListAsync();
 
-    public async Task<Todonote> CreateAsync(Todonote entity)
-    {
-        await _context.Todonotes.AddAsync(entity);
-        await _context.SaveChangesAsync();
-        return entity;
-    }
-
-    public async Task UpdateAsync(Todonote entity)
-    {
-        _context.Entry(entity).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteAsync(Todonote entity)
-    {
-        _context.Todonotes.Remove(entity);
-        await _context.SaveChangesAsync();
-    }
+    public void DeleteTodo(Todo todo) => Delete(todo);
+    public void UpdateTodo(Todo todo) => Update(todo);
 }

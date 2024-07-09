@@ -1,20 +1,26 @@
-﻿namespace JatodaBackendApi.Models.DBModels;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JatodaBackendApi.Models.DBModels;
 
 public class User
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
-    public string? Username { get; set; } = null!;
+    [Required(ErrorMessage = "Username is a required field.")]
+    [MaxLength(60, ErrorMessage = "Maximum length for the Username is 60 characters.")]
+    public string? Username { get; set; }
 
-    public string? Email { get; set; } = null!;
+    [Required(ErrorMessage = "Email is required field")]
+    public string Email { get; set; }
 
-    public string Passwordhash { get; set; } = null!;
+    [Required(ErrorMessage = "PasswordHash is required field")]
+    public string? PasswordHash { get; set; }
 
-    public DateTime Createdat { get; set; }
+    public DateTime CreateDate { get; set; }
 
-    public DateTime Updatedat { get; set; }
+    public DateTime UpdateDate { get; set; }
 
-    public virtual ICollection<Todonote> Todonotes { get; set; } = new List<Todonote>();
+    public virtual ICollection<Todo> Todos { get; set; }
 
-    public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
+    public virtual ICollection<Role> Roles { get; set; }
 }

@@ -1,6 +1,6 @@
 ﻿namespace JatodaBackendApi.Models.DBModels;
 
-public class Filemetadatum
+public class FileMetadata
 {
     public int Id { get; set; }
 
@@ -18,5 +18,5 @@ public class Filemetadatum
 
     public DateTime Updatedat { get; set; }
 
-    public virtual Todonote Todonote { get; set; } = null!;
+    public virtual Todo Todo { get; set; } = null!;
 }

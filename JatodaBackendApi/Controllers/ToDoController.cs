@@ -19,9 +19,9 @@ public class ToDoController : ControllerBase
     private readonly IFileProvider _fileProvider;
     private readonly ILogger<ToDoController> _logger;
     private readonly IMapper _mapper;
-    private readonly ITodoProvider<Todonote> _todoProvider;
+    private readonly ITodoProvider<Todo> _todoProvider;
 
-    public ToDoController(ITodoProvider<Todonote> todoProvider, ILogger<ToDoController> logger,
+    public ToDoController(ITodoProvider<Todo> todoProvider, ILogger<ToDoController> logger,
         IMapper mapper, IFileProvider fileProvider)
     {
         _todoProvider = todoProvider;
@@ -118,7 +118,7 @@ public class ToDoController : ControllerBase
             await _fileProvider.UploadFileAsync(todo.File);
         }
 
-        var newTodo = _mapper.Map<Todonote>(todo);
+        var newTodo = _mapper.Map<Todo>(todo);
         var createdTodo = await _todoProvider.AddTodoAsync(newTodo);
         var mappedTodo = _mapper.Map<TodonoteViewModel>(createdTodo);
         return CreatedAtAction(nameof(GetById), new {id = createdTodo.Id}, mappedTodo);
@@ -138,7 +138,7 @@ public class ToDoController : ControllerBase
             throw new TodoNotFoundException(id);
         }
 
-        var fileName = todo.Multimediafilepath;
+        var fileName = todo.MultimediaFilePath;
         var fileStream = await _fileProvider.GetFileAsync(fileName!);
 
         if (fileStream is null)
