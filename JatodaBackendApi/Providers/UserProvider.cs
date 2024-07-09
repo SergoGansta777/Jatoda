@@ -11,12 +11,29 @@ public class UserProvider : IUserProvider<User>
 {
     private static readonly TimeSpan DefaultTimeForCache = TimeSpan.FromMinutes(5);
     private readonly ICacheService _cacheService;
-    private readonly IUserRepository _userRepository;
+    private readonly IRepositoryManager _repository;
 
     public UserProvider(ICacheService cacheService, IRepositoryManager repositoryManager)
     {
         _cacheService = cacheService;
-        _userRepository = repositoryManager.User;
+        _repository = repositoryManager;
+    }
+    
+    public async Task<User> AddUserAsync(User user)
+    {
+        user.CreateDate = Now.ToUniversalTime();
+        user.UpdateDate = Now.ToUniversalTime();
+
+        _repository.User.CreateUser(user);
+        _repository.Save();
+        
+        await _cacheService.SetCacheAsync(
+            $"user:{user.Id}",
+            user,
+            DefaultTimeForCache
+        );
+
+        return user;
     }
 
     public async Task<User?> GetByUsernameAsync(string? username)
@@ -34,7 +51,7 @@ public class UserProvider : IUserProvider<User>
             return user;
         }
 
-        user = await _userRepository.GetByUsernameAsync(username, false);
+        user = await _repository.User.GetByUsernameAsync(username, false);
 
         if (user is not null)
         {
@@ -59,26 +76,11 @@ public class UserProvider : IUserProvider<User>
             return user;
         }
 
-        user = await _userRepository.GetByEmailAsync(email, false);
+        user = await _repository.User.GetByEmailAsync(email, false);
         if (user is not null)
         {
             await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
         }
-
-        return user;
-    }
-
-    public async Task<User> AddUserAsync(User user)
-    {
-        user.CreateDate = Now.ToUniversalTime();
-        user.UpdateDate = Now.ToUniversalTime();
-
-        _userRepository.CreateUser(user);
-        await _cacheService.SetCacheAsync(
-            $"user:{user.Id}",
-            user,
-            DefaultTimeForCache
-        );
 
         return user;
     }
@@ -93,7 +95,7 @@ public class UserProvider : IUserProvider<User>
             return user;
         }
 
-        user = await _userRepository.GetByIdAsync(id, false);
+        user = await _repository.User.GetByIdAsync(id, false);
         if (user is not null)
         {
             await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
