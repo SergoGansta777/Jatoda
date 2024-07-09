@@ -1,39 +1,22 @@
 using JatodaBackendApi.Models.DBModels;
 using JatodaBackendApi.Providers.Interfaces;
-using JatodaBackendApi.Repositories;
 using JatodaBackendApi.Repositories.Interfaces;
-using JatodaBackendApi.Services.CacheService.Interfaces;
 using static System.DateTime;
 
 namespace JatodaBackendApi.Providers;
 
-public class UserProvider : IUserProvider<User>
+public class UserProvider(IRepositoryManager repositoryManager)
+    : IUserProvider<User>
 {
-    private static readonly TimeSpan DefaultTimeForCache = TimeSpan.FromMinutes(5);
-    private readonly ICacheService _cacheService;
-    private readonly IRepositoryManager _repository;
-
-    public UserProvider(ICacheService cacheService, IRepositoryManager repositoryManager)
-    {
-        _cacheService = cacheService;
-        _repository = repositoryManager;
-    }
-    
-    public async Task<User> AddUserAsync(User user)
+    public Task<User> AddUserAsync(User user)
     {
         user.CreateDate = Now.ToUniversalTime();
         user.UpdateDate = Now.ToUniversalTime();
 
-        _repository.User.CreateUser(user);
-        _repository.Save();
-        
-        await _cacheService.SetCacheAsync(
-            $"user:{user.Id}",
-            user,
-            DefaultTimeForCache
-        );
+        repositoryManager.User.CreateUser(user);
+        repositoryManager.Save();
 
-        return user;
+        return Task.FromResult(user);
     }
 
     public async Task<User?> GetByUsernameAsync(string? username)
@@ -43,20 +26,7 @@ public class UserProvider : IUserProvider<User>
             return null;
         }
 
-        var cacheKey = $"user:{username}";
-        var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
-
-        if (user is not null)
-        {
-            return user;
-        }
-
-        user = await _repository.User.GetByUsernameAsync(username, false);
-
-        if (user is not null)
-        {
-            await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
-        }
+        var user = await repositoryManager.User.GetByUsernameAsync(username, false);
 
         return user;
     }
@@ -68,39 +38,13 @@ public class UserProvider : IUserProvider<User>
             return null;
         }
 
-        var cacheKey = $"user_email:{email}";
-        var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
-
-        if (user is not null)
-        {
-            return user;
-        }
-
-        user = await _repository.User.GetByEmailAsync(email, false);
-        if (user is not null)
-        {
-            await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
-        }
-
+        var user = await repositoryManager.User.GetByEmailAsync(email, false);
         return user;
     }
 
     public async Task<User?> GetByIdAsync(Guid id)
     {
-        var cacheKey = $"user_id:{id}";
-        var user = await _cacheService.GetFromCacheAsync<User>(cacheKey);
-
-        if (user is not null)
-        {
-            return user;
-        }
-
-        user = await _repository.User.GetByIdAsync(id, false);
-        if (user is not null)
-        {
-            await _cacheService.SetCacheAsync(cacheKey, user, DefaultTimeForCache);
-        }
-
+        var user = await repositoryManager.User.GetByIdAsync(id, false);
         return user;
     }
 }

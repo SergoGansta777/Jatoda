@@ -8,7 +8,7 @@ public class User
 
     [Required(ErrorMessage = "Username is a required field.")]
     [MaxLength(60, ErrorMessage = "Maximum length for the Username is 60 characters.")]
-    public string? Username { get; set; }
+    public string Username { get; set; }
 
     [Required(ErrorMessage = "Email is required field")]
     public string Email { get; set; }

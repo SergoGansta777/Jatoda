@@ -26,4 +26,19 @@ public class CacheService : ICacheService
     {
         await _cacheRepository.RemoveFromCacheAsync(key);
     }
+
+    public async Task<T> GetOrCreateCacheAsync<T>(string key, Func<Task<T>> factory, TimeSpan expiration)
+    {
+        var cachedValue = await _cacheRepository.GetFromCacheAsync<T>(key);
+
+        if (cachedValue is not null)
+        {
+            return cachedValue;
+        }
+
+        var value = await factory();
+        await _cacheRepository.SetCacheAsync(key, value, expiration);
+
+        return value;
+    }
 }

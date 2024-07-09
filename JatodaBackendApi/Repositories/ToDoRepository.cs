@@ -6,8 +6,6 @@ namespace JatodaBackendApi.Repositories;
 
 public class ToDoRepository(JatodaContext context) : RepositoryBase<Todo>(context), IToDoRepository
 {
-    private readonly JatodaContext _context = context ?? throw new ArgumentNullException(nameof(context));
-
     public void CreateTodo(Todo todo)
     {
         Create(todo);
