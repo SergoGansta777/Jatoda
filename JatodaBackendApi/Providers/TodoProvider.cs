@@ -1,5 +1,6 @@
 using JatodaBackendApi.Models.DBModels;
 using JatodaBackendApi.Providers.Interfaces;
+using JatodaBackendApi.Repositories;
 using JatodaBackendApi.Repositories.Interfaces;
 using JatodaBackendApi.Services.CacheService.Interfaces;
 
@@ -10,7 +11,7 @@ public class TodoProvider : ITodoProvider<Todo>
     private static readonly TimeSpan DefaultTimeForCache = TimeSpan.FromMinutes(5);
     private readonly ICacheService _cacheService;
     private readonly ILogger<TodoProvider> _logger;
-    private readonly IRepositoryManager _repository;
+    private readonly IToDoRepository _todoRepository;
 
     public TodoProvider(
         ICacheService cacheService,
@@ -18,12 +19,12 @@ public class TodoProvider : ITodoProvider<Todo>
     {
         _cacheService = cacheService;
         _logger = logger;
-        _repository = repository;
+        _todoRepository = repository.Todo;
     }
 
     public async Task<List<Todo>?> GetAllTodosAsync()
     {
-        var todos = (await _repository.Todo.GetAllTodosAsync(true)).ToList();
+        var todos = (await _todoRepository.GetAllTodosAsync(true)).ToList();
         return todos;
     }
 
@@ -38,7 +39,7 @@ public class TodoProvider : ITodoProvider<Todo>
 
         try
         {
-            todo = await _repository.Todo.GetTodoAsync(id, false);
+            todo = await _todoRepository.GetTodoAsync(id, false);
             await _cacheService.SetCacheAsync(cacheKey, todo, DefaultTimeForCache);
             _logger.LogInformation(
                 "Retrieved todo with id {id} from the repository and set it in the cache", id
@@ -57,7 +58,7 @@ public class TodoProvider : ITodoProvider<Todo>
         todo.CreateDate = DateTime.Now.ToUniversalTime();
         todo.UpdateDate = DateTime.Now.ToUniversalTime();
 
-        _repository.Todo.CreateTodo(todo);
+        _todoRepository.CreateTodo(todo);
         await _cacheService.SetCacheAsync(
             $"todo:{todo.Id}",
             todo,
@@ -72,48 +73,29 @@ public class TodoProvider : ITodoProvider<Todo>
     {
         todo.UpdateDate = DateTime.Now.ToUniversalTime();
 
-        _repository.Todo.UpdateTodo(todo);
+        _todoRepository.UpdateTodo(todo);
         await _cacheService.RemoveFromCacheAsync($"todo:{todo.Id}");
         _logger.LogInformation("Updated todo with id {id} and removed it from the cache", todo.Id);
     }
 
     public async Task DeleteTodoAsync(Todo todo)
     {
-        _repository.Todo.DeleteTodo(todo);
+        _todoRepository.DeleteTodo(todo);
         await _cacheService.RemoveFromCacheAsync($"todo:{todo.Id}");
         _logger.LogInformation("Deleted todo with id {id} and removed it from the cache", todo.Id);
     }
 
-    public async Task<List<Todo>?> GetTodosByUserIdAsync(int userId)
+    public async Task<List<Todo>> GetTodosByUserIdAsync(Guid userId)
     {
-        var todos = (await _repository.Todo.GetAllTodosAsync(false)).Where(t => t. == userId).ToList();
+        var todos = (await _todoRepository.GetByUserIdAsync(userId, false)).ToList();
+        _logger.LogInformation("Got {count} todos for user with userId {userId}", todos.Count, userId);
+        return todos.ToList();
+    }
+
+    public async Task<List<Todo>> GetCompletedTodosByUserIdAsync(Guid userId)
+    {
+        var todos = (await _todoRepository.GetCompletedByUserIdAsync(userId, false)).ToList();
+        _logger.LogInformation("Got {count} completed todos for user with userId {userId}", todos.Count, userId);
         return todos;
-    }
-
-    public async Task<List<Todo>?> GetCompletedTodosByUserIdAsync(int userId)
-    {
-        var todos = (await _todoRepository.GetAllAsync()).Where(t => t.Userid == userId && t.CompletedOn is not null)
-            .ToList();
-        return todos;
-    }
-
-    public async Task<List<Todo>?> GetTodosWithDifficultyLevelAsync(int difficultyLevel)
-    {
-        return await Task.FromResult(
-            _todoRepository
-                .GetAllAsync()
-                .Result.Where(t => t.Difficultylevel == difficultyLevel)
-                .ToList()
-        );
-    }
-
-    public async Task<List<Todo>?> GetTodosWithTagAsync(int tagId)
-    {
-        return await Task.FromResult(
-            _todoRepository
-                .GetAllAsync()
-                .Result.Where(todo => todo.Tags.Any(tag => tag.Id == tagId))
-                .ToList()
-        );
     }
 }

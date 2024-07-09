@@ -47,7 +47,8 @@ public class AuthService : IAuthService
 
     public IActionResult Logout()
     {
-        if (_httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("jwt", out var token))
+        if (_httpContextAccessor.HttpContext != null &&
+            _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("jwt", out var token))
         {
             RevokeUserToken(token);
             _logger.LogInformation("User with token {token} logged out.", token);
@@ -92,7 +93,7 @@ public class AuthService : IAuthService
             }
 
             var token = _tokenService.ValidateToken(jwt);
-            var userId = int.Parse(token.Payload.First(c => c.Key == "nameid").Value.ToString()!);
+            var userId = Guid.Parse(token.Payload.First(c => c.Key == "nameid").Value.ToString()!);
             var user = await _userProvider.GetByIdAsync(userId);
             return new OkObjectResult(user);
         }
@@ -115,7 +116,7 @@ public class AuthService : IAuthService
         return new BadRequestObjectResult(errorMessage);
     }
 
-    private static bool IsValidUser(User? user, string password)
+    private static bool IsValidUser(User? user, string? password)
     {
         return user is not null && BCryptNet.Verify(password, user.PasswordHash);
     }

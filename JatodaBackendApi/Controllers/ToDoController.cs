@@ -52,8 +52,8 @@ public class ToDoController : ControllerBase
     /// </summary>
     /// <param name="id">ID of the ToDo item.</param>
     /// <returns>ToDo item with the specified ID.</returns>
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{id:Guid}")]
+    public async Task<IActionResult> GetById(Guid id)
     {
         var todo = await _todoProvider.GetTodoByIdAsync(id);
         if (todo is null)
@@ -70,14 +70,10 @@ public class ToDoController : ControllerBase
     /// </summary>
     /// <param name="userId">ID of the user.</param>
     /// <returns>List of ToDo items for the user.</returns>
-    [HttpGet("users/{userId:int}/todos")]
-    public async Task<IActionResult> GetTodosByUserId(int userId)
+    [HttpGet("users/{userId:Guid}/todos")]
+    public async Task<IActionResult> GetTodosByUserId(Guid userId)
     {
         var todos = await _todoProvider.GetTodosByUserIdAsync(userId);
-        if (todos is null)
-        {
-            return Ok(todos);
-        }
 
         todos = todos.Where(t => t.CompletedOn is null).ToList();
         var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
@@ -90,14 +86,10 @@ public class ToDoController : ControllerBase
     /// </summary>
     /// <param name="userId">ID of the user.</param>
     /// <returns>List of completed ToDo items for the user.</returns>
-    [HttpGet("users/{userId:int}/completed-todos")]
-    public async Task<IActionResult> GetCompletedTodosByUserId(int userId)
+    [HttpGet("users/{userId:Guid}/completed-todos")]
+    public async Task<IActionResult> GetCompletedTodosByUserId(Guid userId)
     {
         var todos = await _todoProvider.GetTodosByUserIdAsync(userId);
-        if (todos is null)
-        {
-            return Ok(todos);
-        }
 
         todos = todos.Where(t => t.CompletedOn is not null).ToList();
         var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
@@ -129,8 +121,8 @@ public class ToDoController : ControllerBase
     /// </summary>
     /// <param name="id">ID of the ToDo item.</param>
     /// <returns>File attached to the ToDo item.</returns>
-    [HttpGet("{id:int}/file")]
-    public async Task<IActionResult> GetFile(int id)
+    [HttpGet("{id:Guid}/file")]
+    public async Task<IActionResult> GetFile(Guid id)
     {
         var todo = await _todoProvider.GetTodoByIdAsync(id);
         if (todo is null)
@@ -155,8 +147,8 @@ public class ToDoController : ControllerBase
     /// <param name="id">ID of the ToDo item to update.</param>
     /// <param name="todo">Updated ToDo item data.</param>
     /// <returns>No content if successful.</returns>
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] TodonoteViewModel todo)
+    [HttpPut("{id:Guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] TodonoteViewModel todo)
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
         if (existingTodo is null)
@@ -176,8 +168,8 @@ public class ToDoController : ControllerBase
     /// <param name="id">ID of the ToDo item to complete.</param>
     /// <param name="requestModelView">Request data containing the completion date.</param>
     /// <returns>No content if successful.</returns>
-    [HttpPut("{id:int}/complete")]
-    public async Task<IActionResult> Complete(int id, [FromBody] CompleteRequestModelView requestModelView)
+    [HttpPut("{id:Guid}/complete")]
+    public async Task<IActionResult> Complete(Guid id, [FromBody] CompleteRequestModelView requestModelView)
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
 
@@ -201,8 +193,8 @@ public class ToDoController : ControllerBase
     /// </summary>
     /// <param name="id">ID of the ToDo item to delete.</param>
     /// <returns>No content if successful.</returns>
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    [HttpDelete("{id:Guid}")]
+    public async Task<IActionResult> Delete(Guid id)
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
         if (existingTodo is null)

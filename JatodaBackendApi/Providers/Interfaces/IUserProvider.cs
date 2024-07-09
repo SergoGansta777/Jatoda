@@ -8,5 +8,5 @@ public interface IUserProvider<T>
     Task<T?> GetByUsernameAsync(string? username);
     Task<T> AddUserAsync(T entity);
     Task<T?> GetByEmailAsync(string? email);
-    Task<User?> GetByIdAsync(int id);
+    Task<User?> GetByIdAsync(Guid id);
 }

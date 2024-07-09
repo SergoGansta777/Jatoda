@@ -1,4 +1,3 @@
-using JatodaBackendApi.Models.DBModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 

@@ -84,9 +84,10 @@ public static class ServicesExtensions
 
     private static void RegisterRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IRepository<Todo>, ToDoRepository>();
-        services.AddScoped<IRepository<User>, UserRepository>();
-        services.AddScoped<IRepository<Tag>, TagRepository>();
+        services.AddScoped<IToDoRepository, ToDoRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITagRepository, TagRepository>();
+        services.AddTransient<IRepositoryManager, RepositoryManager>();
     }
 
     private static void RegisterScopedServices(this IServiceCollection services)

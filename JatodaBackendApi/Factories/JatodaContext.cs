@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JatodaBackendApi.Factories;
 
-public partial class JatodaContext : DbContext
+public class JatodaContext : DbContext
 {
     public JatodaContext()
     {
