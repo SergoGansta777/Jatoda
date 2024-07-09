@@ -5,7 +5,7 @@ using static System.TimeSpan;
 
 namespace JatodaBackendApi.Repositories;
 
-public class CachedToDoRepository(JatodaContext context, IToDoRepository repository, ICacheService cacheService)
+public class CachingToDoRepository(JatodaContext context, IToDoRepository repository, ICacheService cacheService)
     : RepositoryBase<Todo>(context), IToDoRepository
 {
     private static readonly TimeSpan DefaultTimeForCache = FromMinutes(3);

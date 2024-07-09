@@ -3,7 +3,7 @@ using JatodaBackendApi.Services.CacheService.Interfaces;
 
 namespace JatodaBackendApi.Repositories;
 
-public class CachedUserRepository(IUserRepository repository, ICacheService cacheService) : IUserRepository
+public class CachingUserRepository(IUserRepository repository, ICacheService cacheService) : IUserRepository
 {
     private static readonly TimeSpan DefaultTimeForCache = TimeSpan.FromMinutes(3);
 
