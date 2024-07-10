@@ -3,7 +3,6 @@ using System.Text;
 using AspNetCoreRateLimit;
 using Jatoda.Application.Interfaces;
 using Jatoda.Application.Service;
-using Jatoda.Applications.Providers;
 using Jatoda.Domain.Data.DBModels;
 using Jatoda.Infrastructure.CacheService;
 using Jatoda.Infrastructure.CacheService.Interfaces;
