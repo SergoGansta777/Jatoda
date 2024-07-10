@@ -1,5 +1,5 @@
-using Jatoda.Models.ModelViews;
-using Jatoda.Services.AuthService.Interfaces;
+using Jatoda.Application.Core.Models.ModelViews;
+using Jatoda.Providers.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +12,11 @@ namespace Jatoda.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly IAuthProvider _authProvider;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthProvider authProvider)
     {
-        _authService = authService;
+        _authProvider = authProvider;
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestModelView model)
     {
-        return await _authService.Login(model);
+        return await _authProvider.Login(model);
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class AuthController : ControllerBase
     [Authorize(AuthenticationSchemes = "Bearer")]
     public IActionResult Logout()
     {
-        return _authService.Logout();
+        return _authProvider.Logout();
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestModelView model)
     {
-        return await _authService.Register(model);
+        return await _authProvider.Register(model);
     }
 
     /// <summary>
@@ -68,6 +68,6 @@ public class AuthController : ControllerBase
     [Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<IActionResult> UserByToken()
     {
-        return await _authService.GetUserByToken();
+        return await _authProvider.GetUserByToken();
     }
 }

@@ -1,6 +1,6 @@
 using System.Net;
-using Jatoda.Models.ErrorModels;
-using Jatoda.Models.Exceptions;
+using Jatoda.Domain.Data.ErrorModels;
+using Jatoda.Domain.Data.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace Jatoda.Extensions;

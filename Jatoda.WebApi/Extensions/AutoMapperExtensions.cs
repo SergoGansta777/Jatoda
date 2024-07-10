@@ -1,4 +1,4 @@
-using Jatoda.Mappers;
+using Jatoda.Domain.Core.Mappers;
 
 namespace Jatoda.Extensions;
 

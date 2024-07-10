@@ -1,10 +1,11 @@
 using AutoMapper;
-using Jatoda.Models.DBModels;
-using Jatoda.Models.Exceptions;
-using Jatoda.Models.ModelViews;
+using Jatoda.Application.Core.Models.ModelViews;
+using Jatoda.Domain.Data.DBModels;
+using Jatoda.Domain.Data.Exceptions;
 using Jatoda.Providers.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using IFileProvider = Jatoda.Providers.Interfaces.IFileProvider;
 
 namespace Jatoda.Controllers;
 
@@ -105,10 +106,10 @@ public class ToDoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] TodonoteViewModel todo)
     {
-        if (todo.File is not null)
-        {
-            await _fileProvider.UploadFileAsync(todo.File);
-        }
+        // if (todo.File is not null)
+        // {
+        //     await _fileProvider.UploadFileAsync(todo.File);
+        // }
 
         var newTodo = _mapper.Map<Todo>(todo);
         var createdTodo = await _todoProvider.AddTodoAsync(newTodo);

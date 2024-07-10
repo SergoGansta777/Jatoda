@@ -1,23 +1,21 @@
 using System.Reflection;
 using System.Text;
 using AspNetCoreRateLimit;
-using Jatoda.Factories;
-using Jatoda.Models.DBModels;
-using Jatoda.Options;
+using Jatoda.Application.Interfaces;
+using Jatoda.Application.Service;
+using Jatoda.Applications.Providers;
+using Jatoda.Domain.Data.DBModels;
+using Jatoda.Infrastructure.CacheService;
+using Jatoda.Infrastructure.CacheService.Interfaces;
+using Jatoda.Infrastructure.CacheService.Repositories;
+using Jatoda.Infrastructure.CacheService.Repositories.Interfaces;
+using Jatoda.Infrastructure.DataEFCore;
+using Jatoda.Infrastructure.DataEFCore.Repositories;
+using Jatoda.Infrastructure.MinIoService;
+using Jatoda.Infrastructure.MinIoService.Interfaces;
+using Jatoda.Infrastructure.MinIoService.Options;
 using Jatoda.Providers;
 using Jatoda.Providers.Interfaces;
-using Jatoda.Repositories;
-using Jatoda.Repositories.Interfaces;
-using Jatoda.Services.AuthService;
-using Jatoda.Services.AuthService.Interfaces;
-using Jatoda.Services.CacheService;
-using Jatoda.Services.CacheService.Interfaces;
-using Jatoda.Services.CacheService.Repositories;
-using Jatoda.Services.CacheService.Repositories.Interfaces;
-using Jatoda.Services.JwtTokenService;
-using Jatoda.Services.JwtTokenService.Interfaces;
-using Jatoda.Services.MinIoService;
-using Jatoda.Services.MinIoService.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -87,20 +85,21 @@ public static class ServicesExtensions
         services.AddScoped<IToDoRepository, ToDoRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
-        
+
         services.Decorate<IUserRepository, CachingUserRepository>();
         services.Decorate<IToDoRepository, CachingToDoRepository>();
-        
+
         services.AddTransient<IRepositoryManager, RepositoryManager>();
     }
 
     private static void RegisterScopedServices(this IServiceCollection services)
     {
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<ITodoProvider<Todo>, TodoProvider>();
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IUserProvider<User>, UserProvider>();
         services.AddScoped<IMinioService, MinioService>();
+
+        services.AddScoped<ITodoProvider<Todo>, TodoProvider>();
+        services.AddScoped<IAuthProvider, AuthProvider>();
+        services.AddScoped<IUserProvider<User>, UserProvider>();
         services.AddScoped<IFileProvider, FileProvider>();
     }
 
