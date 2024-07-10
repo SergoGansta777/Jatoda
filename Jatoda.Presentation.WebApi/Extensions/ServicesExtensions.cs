@@ -110,7 +110,7 @@ public static class ServicesExtensions
         services.AddDistributedMemoryCache();
         services.AddHttpContextAccessor();
         services.AddControllers();
-        
+
         services.Configure<TokenOptions>(configuration.GetSection("jwt"));
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
     }

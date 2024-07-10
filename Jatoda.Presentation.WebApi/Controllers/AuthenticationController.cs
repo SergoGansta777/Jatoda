@@ -10,15 +10,8 @@ namespace Jatoda.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class AuthController(IAuthProvider authProvider) : ControllerBase
 {
-    private readonly IAuthProvider _authProvider;
-
-    public AuthController(IAuthProvider authProvider)
-    {
-        _authProvider = authProvider;
-    }
-
     /// <summary>
     ///     Logs in a user with the specified credentials.
     /// </summary>
@@ -29,7 +22,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestModelView model)
     {
-        return await _authProvider.Login(model);
+        return await authProvider.Login(model);
     }
 
     /// <summary>
@@ -42,7 +35,7 @@ public class AuthController : ControllerBase
     [Authorize(AuthenticationSchemes = "Bearer")]
     public IActionResult Logout()
     {
-        return _authProvider.Logout();
+        return authProvider.Logout();
     }
 
     /// <summary>
@@ -55,7 +48,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestModelView model)
     {
-        return await _authProvider.Register(model);
+        return await authProvider.Register(model);
     }
 
     /// <summary>
@@ -68,6 +61,6 @@ public class AuthController : ControllerBase
     [Authorize(AuthenticationSchemes = "Bearer")]
     public async Task<IActionResult> UserByToken()
     {
-        return await _authProvider.GetUserByToken();
+        return await authProvider.GetUserByToken();
     }
 }
