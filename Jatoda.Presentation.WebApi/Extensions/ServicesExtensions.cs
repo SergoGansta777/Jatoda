@@ -3,6 +3,7 @@ using System.Text;
 using AspNetCoreRateLimit;
 using Jatoda.Application.Interfaces;
 using Jatoda.Application.Service;
+using Jatoda.Application.Service.Options;
 using Jatoda.Domain.Data.DBModels;
 using Jatoda.Infrastructure.CacheService;
 using Jatoda.Infrastructure.CacheService.Interfaces;
@@ -36,7 +37,7 @@ public static class ServicesExtensions
         services.RegisterMinio(configuration);
         services.RegisterRepositories();
         services.RegisterScopedServices();
-        services.RegisterOptions();
+        services.RegisterOptions(configuration);
         services.RegisterAuthentication(configuration);
         services.RegisterSwagger();
         services.RegisterMiscellaneous();
@@ -44,7 +45,7 @@ public static class ServicesExtensions
 
     private static void RegisterDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DbConnection");
+        var connectionString = configuration.GetConnectionString("SqlConnection");
         services.AddDbContext<JatodaContext>(options => options.UseNpgsql(connectionString));
     }
 
@@ -102,13 +103,15 @@ public static class ServicesExtensions
         services.AddScoped<IFileProvider, FileProvider>();
     }
 
-    private static void RegisterOptions(this IServiceCollection services)
+    private static void RegisterOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOptions();
         services.AddMemoryCache();
         services.AddDistributedMemoryCache();
         services.AddHttpContextAccessor();
         services.AddControllers();
+        
+        services.Configure<TokenOptions>(configuration.GetSection("jwt"));
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
     }
 

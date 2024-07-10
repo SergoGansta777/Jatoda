@@ -4,7 +4,7 @@ public class FileMetadata
 {
     public int Id { get; set; }
 
-    public int TodoId { get; set; }
+    public int AttachedTodoId { get; set; }
 
     public string Filename { get; set; } = null!;
 

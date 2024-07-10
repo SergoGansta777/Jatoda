@@ -41,7 +41,7 @@ public class AuthProvider : IAuthProvider
 
         _logger.LogInformation("User {Username} logged in successfully.", user.Username);
 
-        return new OkObjectResult(new {message = "Login successful", username = user.Username, userid = user.Id});
+        return new OkObjectResult(new {message = "Login successful", username = user.Username, token = token});
     }
 
     public IActionResult Logout()
