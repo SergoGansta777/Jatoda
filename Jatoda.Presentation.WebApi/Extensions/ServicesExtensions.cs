@@ -3,8 +3,8 @@ using System.Text;
 using AspNetCoreRateLimit;
 using Jatoda.Application.Interfaces;
 using Jatoda.Application.Service;
-using Jatoda.Application.Service.Options;
 using Jatoda.Domain.Data.DBModels;
+using Jatoda.Domain.Data.Options;
 using Jatoda.Infrastructure.CacheService;
 using Jatoda.Infrastructure.CacheService.Interfaces;
 using Jatoda.Infrastructure.CacheService.Repositories;
@@ -13,7 +13,6 @@ using Jatoda.Infrastructure.DataEFCore;
 using Jatoda.Infrastructure.DataEFCore.Repositories;
 using Jatoda.Infrastructure.MinIoService;
 using Jatoda.Infrastructure.MinIoService.Interfaces;
-using Jatoda.Infrastructure.MinIoService.Options;
 using Jatoda.Providers;
 using Jatoda.Providers.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -111,6 +110,7 @@ public static class ServicesExtensions
         services.AddHttpContextAccessor();
         services.AddControllers();
 
+        services.Configure<EmailConfirmationOptions>(configuration.GetSection("email-confirmation"));
         services.Configure<TokenOptions>(configuration.GetSection("jwt"));
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
     }

@@ -1,5 +1,5 @@
+using Jatoda.Domain.Data.Options;
 using Jatoda.Infrastructure.MinIoService.Interfaces;
-using Jatoda.Infrastructure.MinIoService.Options;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;

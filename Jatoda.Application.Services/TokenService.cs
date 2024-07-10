@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Jatoda.Application.Interfaces;
-using Jatoda.Application.Service.Options;
+using Jatoda.Domain.Data.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 

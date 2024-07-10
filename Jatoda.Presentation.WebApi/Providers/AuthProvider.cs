@@ -1,8 +1,13 @@
+using System.Web;
 using Jatoda.Application.Core.Models.ModelViews;
 using Jatoda.Application.Interfaces;
 using Jatoda.Domain.Data.DBModels;
+using Jatoda.Domain.Data.Options;
 using Jatoda.Providers.Interfaces;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using MimeKit;
 using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace Jatoda.Providers;
@@ -11,9 +16,12 @@ public class AuthProvider(
     IUserProvider<User> userProvider,
     ITokenService tokenService,
     ILogger<AuthProvider> logger,
-    IHttpContextAccessor httpContextAccessor)
+    IHttpContextAccessor httpContextAccessor,
+    IOptions<EmailConfirmationOptions> emailSettings)
     : IAuthProvider
 {
+    private readonly EmailConfirmationOptions _emailOptions = emailSettings.Value;
+
     public async Task<IActionResult> Login(LoginRequestModelView? model)
     {
         if (IsInvalidLoginRequest(model))
@@ -68,6 +76,8 @@ public class AuthProvider(
 
         var createdUser = await CreateUser(model);
         logger.LogInformation("User {Username} registered successfully.", createdUser.Username);
+
+        await SendVerificationEmail(createdUser); // Send verification email
 
         return new CreatedAtActionResult(nameof(Register), "Auth", new {id = createdUser.Id}, createdUser);
     }
@@ -176,9 +186,32 @@ public class AuthProvider(
         {
             Username = model.Username,
             PasswordHash = passwordHash,
-            Email = model.Email
+            Email = model.Email,
+            IsEmailConfirmed = false
         };
 
         return await userProvider.AddUserAsync(user);
+    }
+
+    private async Task SendVerificationEmail(User user)
+    {
+        var emailMessage = new MimeMessage();
+        emailMessage.From.Add(new MailboxAddress("YourApp", _emailOptions.FromEmail));
+        emailMessage.To.Add(new MailboxAddress(user.Username, user.Email));
+        emailMessage.Subject = "Email Verification";
+
+        var verificationLink =
+            $"{_emailOptions.FrontendUrl}/verify-email?token={HttpUtility.UrlEncode(tokenService.GenerateToken(user.Id.ToString(), user.Email))}";
+
+        emailMessage.Body = new TextPart("plain")
+        {
+            Text = $"Please verify your email by clicking on the following link: {verificationLink}"
+        };
+
+        using var client = new SmtpClient();
+        await client.ConnectAsync(_emailOptions.SmtpServer, _emailOptions.SmtpPort, true);
+        await client.AuthenticateAsync(_emailOptions.SmtpUsername, _emailOptions.SmtpPassword);
+        await client.SendAsync(emailMessage);
+        await client.DisconnectAsync(true);
     }
 }

@@ -10,4 +10,8 @@
         <PackageReference Include="Minio" Version="6.0.3"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
+    </ItemGroup>
+
 </Project>

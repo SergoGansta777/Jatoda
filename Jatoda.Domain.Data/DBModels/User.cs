@@ -20,6 +20,8 @@ public class User
 
     public DateTime UpdateDate { get; set; }
 
+    public bool IsEmailConfirmed { get; set; } = false;
+
     public virtual ICollection<Todo> Todos { get; set; }
 
     public virtual ICollection<Role> Roles { get; set; }
