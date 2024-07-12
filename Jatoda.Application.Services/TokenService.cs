@@ -112,6 +112,12 @@ public class TokenService(IOptions<TokenOptions> options) : ITokenService
         }
     }
 
+    public string GetUserIdFromToken(string token)
+    {
+        var jwtToken = ValidateToken(token);
+        return jwtToken.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+    }
+
     public void RevokeToken(string? token)
     {
         _revokedToken.Add(token);

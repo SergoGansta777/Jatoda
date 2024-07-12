@@ -1,12 +1,13 @@
 using Jatoda.Application.Core.Models.ModelViews;
-using Microsoft.AspNetCore.Mvc;
+using Jatoda.Application.Core.Models.ResponseModels;
 
 namespace Jatoda.Providers.Interfaces;
 
 public interface IAuthProvider
 {
-    Task<IActionResult> Login(LoginRequestModelView? model);
-    IActionResult Logout();
-    Task<IActionResult> Register(RegisterRequestModelView? model);
-    Task<IActionResult> GetUserByToken();
+    Task<AuthResponseModel> Login(LoginRequestModel? model);
+    LogoutResponseModel Logout();
+    Task<AuthResponseModel> Register(RegisterRequestModel? model);
+    Task<AuthResponseModel> GetUserByToken();
+    Task<AuthResponseModel> ConfirmEmail(string token);
 }

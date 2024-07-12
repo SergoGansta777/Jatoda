@@ -1,6 +1,6 @@
 namespace Jatoda.Application.Core.Models.ModelViews;
 
-public class RegisterRequestModelView
+public class RegisterRequestModel
 {
     public string? Username { get; set; }
     public string? Email { get; set; }

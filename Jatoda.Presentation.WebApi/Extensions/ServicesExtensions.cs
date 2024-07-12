@@ -3,7 +3,6 @@ using AspNetCoreRateLimit;
 using Jatoda.Application.Service;
 using Jatoda.Domain.Core;
 using Jatoda.Domain.Data.DBModels;
-using Jatoda.Domain.Data.Options;
 using Jatoda.Infrastructure.CacheService;
 using Jatoda.Infrastructure.DataEFCore;
 using Jatoda.Infrastructure.MinIoService;
@@ -26,8 +25,9 @@ public static class ServicesExtensions
 
         services.RegisterRateLimiting(configuration);
 
-        services.RegisterMinio();
+        services.RegisterInternalServices(configuration);
         services.RegisterProviders();
+        services.RegisterMinio(configuration);
         services.RegisterJwtAuthenticationOptions(configuration);
 
         services.RegisterAutoMapper();
@@ -60,9 +60,6 @@ public static class ServicesExtensions
     private static void RegisterOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
-        services.Configure<EmailConfirmationOptions>(configuration.GetSection("email-confirmation"));
-        services.Configure<MinioOptions>(configuration.GetSection("Minio"));
-        services.Configure<TokenOptions>(configuration.GetSection("jwt"));
 
         services.AddOptions();
         services.AddMemoryCache();

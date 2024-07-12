@@ -1,6 +1,6 @@
 namespace Jatoda.Application.Core.Models.ModelViews;
 
-public class TodonoteViewModel
+public class TodoDto
 {
     public int Id { get; set; }
     public string? Notes { get; set; }

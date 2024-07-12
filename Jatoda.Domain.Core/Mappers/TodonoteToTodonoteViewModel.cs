@@ -8,6 +8,6 @@ public class TodonoteToTodonoteViewModel : Profile
 {
     public TodonoteToTodonoteViewModel()
     {
-        CreateMap<Todo, TodonoteViewModel>();
+        CreateMap<Todo, TodoDto>();
     }
 }

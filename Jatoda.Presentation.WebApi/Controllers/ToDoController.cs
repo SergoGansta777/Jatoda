@@ -44,7 +44,7 @@ public class ToDoController : ControllerBase
             return Ok(todos);
         }
 
-        var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
+        var mappedTodos = todos.Select(t => _mapper.Map<TodoDto>(t)).ToList();
         return Ok(mappedTodos);
     }
 
@@ -62,7 +62,7 @@ public class ToDoController : ControllerBase
             throw new TodoNotFoundException(id);
         }
 
-        var mappedTodo = _mapper.Map<TodonoteViewModel>(todo);
+        var mappedTodo = _mapper.Map<TodoDto>(todo);
         return Ok(mappedTodo);
     }
 
@@ -77,7 +77,7 @@ public class ToDoController : ControllerBase
         var todos = await _todoProvider.GetTodosByUserIdAsync(userId);
 
         todos = todos.Where(t => t.CompletedOn is null).ToList();
-        var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
+        var mappedTodos = todos.Select(t => _mapper.Map<TodoDto>(t)).ToList();
         _logger.LogInformation("Retrieved todos from the repository");
         return Ok(mappedTodos);
     }
@@ -93,7 +93,7 @@ public class ToDoController : ControllerBase
         var todos = await _todoProvider.GetTodosByUserIdAsync(userId);
 
         todos = todos.Where(t => t.CompletedOn is not null).ToList();
-        var mappedTodos = todos.Select(t => _mapper.Map<TodonoteViewModel>(t)).ToList();
+        var mappedTodos = todos.Select(t => _mapper.Map<TodoDto>(t)).ToList();
         _logger.LogInformation("Retrieved completed todos from the repository");
         return Ok(mappedTodos);
     }
@@ -104,7 +104,7 @@ public class ToDoController : ControllerBase
     /// <param name="todo">ToDo item data.</param>
     /// <returns>Created ToDo item.</returns>
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] TodonoteViewModel todo)
+    public async Task<IActionResult> Add([FromBody] TodoDto todo)
     {
         // if (todo.File is not null)
         // {
@@ -113,7 +113,7 @@ public class ToDoController : ControllerBase
 
         var newTodo = _mapper.Map<Todo>(todo);
         var createdTodo = await _todoProvider.AddTodoAsync(newTodo);
-        var mappedTodo = _mapper.Map<TodonoteViewModel>(createdTodo);
+        var mappedTodo = _mapper.Map<TodoDto>(createdTodo);
         return CreatedAtAction(nameof(GetById), new {id = createdTodo.Id}, mappedTodo);
     }
 
@@ -149,7 +149,7 @@ public class ToDoController : ControllerBase
     /// <param name="todo">Updated ToDo item data.</param>
     /// <returns>No content if successful.</returns>
     [HttpPut("{id:Guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] TodonoteViewModel todo)
+    public async Task<IActionResult> Update(Guid id, [FromBody] TodoDto todo)
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
         if (existingTodo is null)
@@ -167,10 +167,10 @@ public class ToDoController : ControllerBase
     ///     Mark a ToDo item as completed.
     /// </summary>
     /// <param name="id">ID of the ToDo item to complete.</param>
-    /// <param name="requestModelView">Request data containing the completion date.</param>
+    /// <param name="requestModel">Request data containing the completion date.</param>
     /// <returns>No content if successful.</returns>
     [HttpPut("{id:Guid}/complete")]
-    public async Task<IActionResult> Complete(Guid id, [FromBody] CompleteRequestModelView requestModelView)
+    public async Task<IActionResult> Complete(Guid id, [FromBody] CompleteRequestModel requestModel)
     {
         var existingTodo = await _todoProvider.GetTodoByIdAsync(id);
 
@@ -179,12 +179,12 @@ public class ToDoController : ControllerBase
             throw new TodoNotFoundException(id);
         }
 
-        if (requestModelView.CompletedOn is null)
+        if (requestModel.CompletedOn is null)
         {
             throw new CompleteBadRequestException();
         }
 
-        existingTodo.CompletedOn = DateTime.Parse(requestModelView.CompletedOn).ToUniversalTime();
+        existingTodo.CompletedOn = DateTime.Parse(requestModel.CompletedOn).ToUniversalTime();
         await _todoProvider.UpdateTodoAsync(existingTodo);
         return NoContent();
     }

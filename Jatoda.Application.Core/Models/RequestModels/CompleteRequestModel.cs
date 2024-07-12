@@ -1,6 +1,6 @@
 namespace Jatoda.Application.Core.Models.ModelViews;
 
-public class CompleteRequestModelView
+public class CompleteRequestModel
 {
     public string? CompletedOn { get; set; }
 }

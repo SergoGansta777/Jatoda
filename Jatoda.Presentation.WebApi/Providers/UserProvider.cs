@@ -8,7 +8,7 @@ namespace Jatoda.Providers;
 public class UserProvider(IRepositoryManager repositoryManager)
     : IUserProvider<User>
 {
-    public Task<User> AddUserAsync(User user)
+    public Task<User> CreateAsync(User user)
     {
         user.CreateDate = Now.ToUniversalTime();
         user.UpdateDate = Now.ToUniversalTime();
