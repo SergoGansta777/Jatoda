@@ -4,7 +4,7 @@ using Jatoda.Application.Core;
 using Jatoda.Application.Service;
 using Jatoda.Domain.Core.DBModels;
 using Jatoda.Infrastructure.CacheService;
-using Jatoda.Infrastructure.DataEFCore;
+using Jatoda.Infrastructure.EFCore;
 using Jatoda.Infrastructure.MinIoService;
 using Jatoda.Providers;
 using Jatoda.Providers.Interfaces;
@@ -17,7 +17,7 @@ public static class ServicesExtensions
 {
     public static void RegisterServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.RegisterOptions(configuration);
+        services.RegisterOptions();
 
         services.RegisterDatabase(configuration);
         services.RegisterCacheService(configuration);
@@ -57,7 +57,7 @@ public static class ServicesExtensions
         services.AddScoped<IFileProvider, FileProvider>();
     }
 
-    private static void RegisterOptions(this IServiceCollection services, IConfiguration configuration)
+    private static void RegisterOptions(this IServiceCollection services)
     {
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 

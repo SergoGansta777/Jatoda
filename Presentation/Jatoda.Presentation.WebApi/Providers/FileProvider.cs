@@ -19,7 +19,7 @@ public class FileProvider : IFileProvider
         try
         {
             using var stream = new MemoryStream();
-            await file.CopyToAsync(stream);
+            await file?.CopyToAsync(stream);
             await _minioService.UploadFileAsync("mybucket", file.FileName, stream);
 
             _logger.LogInformation("File uploaded successfully");

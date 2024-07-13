@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Application.Core", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Domain.Data", "Domain\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj", "{F373EC48-AA32-44E3-997F-E121CDC423CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Infrastructure.DataEFCore", "Infrastructure\Jatoda.Infrastructure.DataEFCore\Jatoda.Infrastructure.DataEFCore.csproj", "{FEACC10A-7702-49D0-BED6-44E04EB843FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Infrastructure.EFCore", "Infrastructure\Jatoda.Infrastructure.EFCore\Jatoda.Infrastructure.EFCore.csproj", "{FEACC10A-7702-49D0-BED6-44E04EB843FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Infrastructure.CacheService", "Infrastructure\Jatoda.Infrastructure.CacheService\Jatoda.Infrastructure.CacheService.csproj", "{3D0FD26F-52D5-4F47-9003-BB4A400448B8}"
 EndProject

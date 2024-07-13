@@ -2,7 +2,7 @@ using Jatoda.Application.Interfaces;
 using Jatoda.Domain.Core.DBModels;
 using Jatoda.Infrastructure.CacheService.Interfaces;
 
-namespace Jatoda.Infrastructure.DataEFCore.Repositories;
+namespace Jatoda.Infrastructure.EFCore.Repositories;
 
 public class CachingUserRepository(IUserRepository repository, ICacheService cacheService) : IUserRepository
 {

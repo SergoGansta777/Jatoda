@@ -1,10 +1,10 @@
 using Jatoda.Application.Interfaces;
-using Jatoda.Infrastructure.DataEFCore.Repositories;
+using Jatoda.Infrastructure.EFCore.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jatoda.Infrastructure.DataEFCore;
+namespace Jatoda.Infrastructure.EFCore;
 
 public static class DataEFCoreExtensions
 {

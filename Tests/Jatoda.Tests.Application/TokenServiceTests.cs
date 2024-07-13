@@ -54,8 +54,8 @@ public class TokenServiceTests
     public void ValidateToken_RevokedToken_ThrowsSecurityTokenException()
     {
         // Arrange
-        var userId = "123";
-        var username = "testuser";
+        const string userId = "123";
+        const string username = "testuser";
         var token = _tokenService.GenerateToken(userId, username);
         _tokenService.RevokeToken(token);
 
@@ -67,8 +67,8 @@ public class TokenServiceTests
     public void GetUserIdFromToken_ValidToken_ReturnsUserId()
     {
         // Arrange
-        var userId = "123";
-        var username = "testuser";
+        const string userId = "123";
+        const string username = "testuser";
         var token = _tokenService.GenerateToken(userId, username);
 
         // Act
@@ -82,8 +82,8 @@ public class TokenServiceTests
     public void RevokeToken_ValidToken_AddsToRevokedList()
     {
         // Arrange
-        var userId = "123";
-        var username = "testuser";
+        const string userId = "123";
+        const string username = "testuser";
         var token = _tokenService.GenerateToken(userId, username);
 
         // Act
@@ -97,8 +97,8 @@ public class TokenServiceTests
     public void ClearRevokedTokens_ClearsRevokedList()
     {
         // Arrange
-        var userId = "123";
-        var username = "testuser";
+        const string userId = "123";
+        const string username = "testuser";
         var token = _tokenService.GenerateToken(userId, username);
         _tokenService.RevokeToken(token);
 

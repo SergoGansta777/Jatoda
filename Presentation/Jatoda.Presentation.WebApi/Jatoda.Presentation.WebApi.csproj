@@ -43,7 +43,7 @@
         <ProjectReference Include="..\..\Application\Jatoda.Application.Core\Jatoda.Application.Core.csproj"/>
         <ProjectReference Include="..\..\Application\Jatoda.Application.Services\Jatoda.Application.Services.csproj"/>
         <ProjectReference Include="..\..\Infrastructure\Jatoda.Infrastructure.CacheService\Jatoda.Infrastructure.CacheService.csproj"/>
-        <ProjectReference Include="..\..\Infrastructure\Jatoda.Infrastructure.DataEFCore\Jatoda.Infrastructure.DataEFCore.csproj"/>
+        <ProjectReference Include="..\..\Infrastructure\Jatoda.Infrastructure.EFCore\Jatoda.Infrastructure.EFCore.csproj"/>
         <ProjectReference Include="..\..\Infrastructure\Jatoda.Infrastructure.MinIoService\Jatoda.Infrastructure.MinIoService.csproj"/>
     </ItemGroup>
 

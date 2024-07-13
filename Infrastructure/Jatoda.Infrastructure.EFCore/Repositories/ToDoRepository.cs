@@ -2,7 +2,7 @@ using Jatoda.Application.Interfaces;
 using Jatoda.Domain.Core.DBModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace Jatoda.Infrastructure.DataEFCore.Repositories;
+namespace Jatoda.Infrastructure.EFCore.Repositories;
 
 public class ToDoRepository(JatodaContext context) : RepositoryBase<Todo>(context), IToDoRepository
 {

@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using Jatoda.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Jatoda.Infrastructure.DataEFCore.Repositories;
+namespace Jatoda.Infrastructure.EFCore.Repositories;
 
 public abstract class RepositoryBase<T>(JatodaContext repositoryContext)
     : IRepositoryBase<T>

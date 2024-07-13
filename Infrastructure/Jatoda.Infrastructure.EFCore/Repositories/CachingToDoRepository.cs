@@ -3,7 +3,7 @@ using Jatoda.Domain.Core.DBModels;
 using Jatoda.Infrastructure.CacheService.Interfaces;
 using static System.TimeSpan;
 
-namespace Jatoda.Infrastructure.DataEFCore.Repositories;
+namespace Jatoda.Infrastructure.EFCore.Repositories;
 
 public class CachingToDoRepository(JatodaContext context, IToDoRepository repository, ICacheService cacheService)
     : RepositoryBase<Todo>(context), IToDoRepository

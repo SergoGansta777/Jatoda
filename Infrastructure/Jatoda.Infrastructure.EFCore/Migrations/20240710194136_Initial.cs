@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Jatoda.Infrastructure.DataEFCore.Migrations
+namespace Jatoda.Infrastructure.EFCore.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

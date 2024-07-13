@@ -48,7 +48,7 @@ public class AuthProvider : IAuthProvider
         var token = _tokenService.GenerateToken(user?.Id.ToString(), user?.Username);
         SetAuthCookie(token);
 
-        _logger.LogInformation("User {Username} logged in successfully.", user.Username);
+        _logger.LogInformation("User {Username} logged in successfully.", user!.Username);
 
         return new AuthResponseModel {Success = true, Message = "Login successful", User = user, Token = token};
     }

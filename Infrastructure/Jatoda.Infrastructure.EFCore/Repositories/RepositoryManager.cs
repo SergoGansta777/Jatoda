@@ -1,6 +1,6 @@
 using Jatoda.Application.Interfaces;
 
-namespace Jatoda.Infrastructure.DataEFCore.Repositories;
+namespace Jatoda.Infrastructure.EFCore.Repositories;
 
 public sealed class RepositoryManager(JatodaContext context) : IRepositoryManager
 {

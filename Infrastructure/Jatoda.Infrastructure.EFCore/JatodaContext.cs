@@ -1,7 +1,7 @@
 ﻿using Jatoda.Domain.Core.DBModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace Jatoda.Infrastructure.DataEFCore;
+namespace Jatoda.Infrastructure.EFCore;
 
 public class JatodaContext : DbContext
 {
