@@ -1,21 +1,22 @@
-using System.Security.Claims;
 using Jatoda.Application.Service;
 using Jatoda.Domain.Core.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 
+namespace Jatoda.Tests.Application;
+
 public class TokenServiceTests
 {
-    private readonly TokenService _tokenService;
     private readonly Mock<IOptions<TokenOptions>> _mockOptions;
+    private readonly TokenService _tokenService;
 
     public TokenServiceTests()
     {
         var tokenOptions = new TokenOptions
         {
             SecretKey = "your-256-bit-secret-needed-for-creation-token",
-            TokenExpiryInDays = 1 
+            TokenExpiryInDays = 1
         };
 
         _mockOptions = new Mock<IOptions<TokenOptions>>();
@@ -103,7 +104,7 @@ public class TokenServiceTests
 
         // Act
         _tokenService.ClearRevokedTokens();
-        
+
         // Assert
         var jwtToken = _tokenService.ValidateToken(token);
         Assert.NotNull(jwtToken);
