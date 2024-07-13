@@ -1,6 +1,6 @@
 using System.Text;
 using Jatoda.Application.Interfaces;
-using Jatoda.Domain.Data.Options;
+using Jatoda.Domain.Core.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

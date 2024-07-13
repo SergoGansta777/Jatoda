@@ -2,7 +2,7 @@ using System.Reflection;
 using AspNetCoreRateLimit;
 using Jatoda.Application.Core;
 using Jatoda.Application.Service;
-using Jatoda.Domain.Data.DBModels;
+using Jatoda.Domain.Core.DBModels;
 using Jatoda.Infrastructure.CacheService;
 using Jatoda.Infrastructure.DataEFCore;
 using Jatoda.Infrastructure.MinIoService;

@@ -1,7 +1,7 @@
 using System.Web;
 using Jatoda.Application.Interfaces;
-using Jatoda.Domain.Data.DBModels;
-using Jatoda.Domain.Data.Options;
+using Jatoda.Domain.Core.DBModels;
+using Jatoda.Domain.Core.Options;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

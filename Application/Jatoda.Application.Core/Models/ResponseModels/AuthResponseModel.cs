@@ -1,4 +1,4 @@
-using Jatoda.Domain.Data.DBModels;
+using Jatoda.Domain.Core.DBModels;
 
 namespace Jatoda.Application.Core.Models.ResponseModels;
 

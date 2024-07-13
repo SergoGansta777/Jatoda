@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Jatoda.Domain.Data.DBModels;
+namespace Jatoda.Domain.Core.DBModels;
 
 public class Tag
 {

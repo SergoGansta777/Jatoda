@@ -1,4 +1,4 @@
-using Jatoda.Domain.Data.Options;
+using Jatoda.Domain.Core.Options;
 using Jatoda.Infrastructure.MinIoService.Interfaces;
 using Microsoft.Extensions.Options;
 using Minio;
@@ -46,7 +46,7 @@ public class MinioService : IMinioService
         {
             var memoryStream = new MemoryStream();
 
-            await _minioClient.GetObjectAsync(new GetObjectArgs()
+            await _minioClient!.GetObjectAsync(new GetObjectArgs()
                 .WithBucket(bucketName)
                 .WithObject(objectName)
                 .WithCallbackStream(s => s.CopyTo(memoryStream)));

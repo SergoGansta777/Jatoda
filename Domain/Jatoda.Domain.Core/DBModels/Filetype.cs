@@ -1,4 +1,4 @@
-﻿namespace Jatoda.Domain.Data.DBModels;
+﻿namespace Jatoda.Domain.Core.DBModels;
 
 public class Filetype
 {

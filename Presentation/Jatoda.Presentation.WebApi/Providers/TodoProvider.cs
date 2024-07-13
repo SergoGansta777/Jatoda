@@ -1,5 +1,5 @@
 using Jatoda.Application.Interfaces;
-using Jatoda.Domain.Data.DBModels;
+using Jatoda.Domain.Core.DBModels;
 using Jatoda.Providers.Interfaces;
 using static System.DateTime;
 

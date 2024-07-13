@@ -1,4 +1,4 @@
-using Jatoda.Domain.Data.Options;
+using Jatoda.Domain.Core.Options;
 using Jatoda.Infrastructure.MinIoService.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

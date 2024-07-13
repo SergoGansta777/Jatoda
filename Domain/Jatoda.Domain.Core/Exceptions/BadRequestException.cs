@@ -1,3 +1,3 @@
-namespace Jatoda.Domain.Data.Exceptions;
+namespace Jatoda.Domain.Core.Exceptions;
 
 public abstract class BadRequestException(string message) : Exception(message);

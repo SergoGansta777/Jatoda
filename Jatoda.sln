@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Application.Services
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Application.Interfaces", "Application\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj", "{3626A85A-4718-4317-BF65-BBEDA507CC68}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Domain.Core", "Domain\Jatoda.Domain.Core\Jatoda.Domain.Core.csproj", "{D953C0CF-704F-483D-B584-6F22E608F244}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{3626A85A-4718-4317-BF65-BBEDA507CC68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3626A85A-4718-4317-BF65-BBEDA507CC68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3626A85A-4718-4317-BF65-BBEDA507CC68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D953C0CF-704F-483D-B584-6F22E608F244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D953C0CF-704F-483D-B584-6F22E608F244}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D953C0CF-704F-483D-B584-6F22E608F244}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D953C0CF-704F-483D-B584-6F22E608F244}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{914B5690-7756-4CB2-B074-060E11F1C6EC} = {6321B1F3-359C-4BEA-9A9B-4101C1633790}
@@ -74,5 +80,6 @@ Global
 		{3D0FD26F-52D5-4F47-9003-BB4A400448B8} = {F38618EE-5C52-4FCE-A42F-FC10052344AF}
 		{69D95177-A11B-4B35-92C1-C08717101D6B} = {6321B1F3-359C-4BEA-9A9B-4101C1633790}
 		{3626A85A-4718-4317-BF65-BBEDA507CC68} = {6321B1F3-359C-4BEA-9A9B-4101C1633790}
+		{D953C0CF-704F-483D-B584-6F22E608F244} = {842897A2-C6AB-4366-B0CA-2A48D45B7C18}
 	EndGlobalSection
 EndGlobal

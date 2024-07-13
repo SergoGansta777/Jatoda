@@ -1,4 +1,4 @@
-namespace Jatoda.Domain.Data.Options;
+namespace Jatoda.Domain.Core.Options;
 
 public class TokenOptions
 {
