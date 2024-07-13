@@ -14,7 +14,6 @@
         <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0"/>
         <PackageReference Include="AutoMapper" Version="13.0.1"/>
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
-        <PackageReference Include="MailKit" Version="4.7.1"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7"/>
@@ -23,12 +22,8 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.6.3"/>
-        <PackageReference Include="Minio" Version="6.0.3"/>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
-        <PackageReference Include="NLog.Extensions.Logging" Version="5.3.11"/>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4"/>
         <PackageReference Include="Scrutor" Version="4.2.2"/>
-        <PackageReference Include="StackExchange.Redis" Version="2.8.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.3"/>
     </ItemGroup>

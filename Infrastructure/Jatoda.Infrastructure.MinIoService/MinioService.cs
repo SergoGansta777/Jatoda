@@ -9,16 +9,13 @@ namespace Jatoda.Infrastructure.MinIoService;
 public class MinioService : IMinioService
 {
     private const int HourInSeconds = 3600;
-    private readonly MinioClient? _minioClient;
+    private readonly IMinioClient _minioClient;
+    private readonly IOptions<MinioOptions> _minioOptions;
 
-    public MinioService(IOptions<MinioOptions> minioOptions)
+    public MinioService(IOptions<MinioOptions> minioOptions, IMinioClient minioClient)
     {
-        var endpoint = minioOptions.Value.Endpoint;
-        var accessKey = minioOptions.Value.AccessKey;
-        var secretKey = minioOptions.Value.SecretKey;
-
-        _minioClient = (MinioClient?) new MinioClient().WithEndpoint(endpoint).WithCredentials(accessKey, secretKey)
-            .Build();
+        _minioOptions = minioOptions;
+        _minioClient = minioClient;
     }
 
     public async Task UploadFileAsync(string bucketName, string objectName, Stream data)

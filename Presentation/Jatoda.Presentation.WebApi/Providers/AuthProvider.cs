@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Jatoda.Application.Core.Models.RequestModels;
 using Jatoda.Application.Core.Models.ResponseModels;
 using Jatoda.Application.Interfaces;
@@ -103,7 +102,7 @@ public class AuthProvider : IAuthProvider
             }
 
             var token = _tokenService.ValidateToken(jwt);
-            var userId = Guid.Parse(token.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            var userId = Guid.Parse(token.Claims.First(c => c.Type == "nameid").Value);
             var user = await _userProvider.GetByIdAsync(userId);
             return new AuthResponseModel {Success = true, Message = "User retrieved successfully.", User = user};
         }

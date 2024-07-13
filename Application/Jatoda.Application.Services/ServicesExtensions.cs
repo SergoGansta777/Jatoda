@@ -6,13 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Jatoda.Application.Service;
+namespace Jatoda.Application.Services;
 
 public static class ServicesExtensions
 {
     public static void RegisterInternalServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<EmailConfirmationOptions>(configuration.GetSection("email-confirmation"));
+        services.Configure<EmailConfirmationOptions>(configuration.GetSection("emailsettings"));
         services.Configure<TokenOptions>(configuration.GetSection("jwt"));
 
         services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();

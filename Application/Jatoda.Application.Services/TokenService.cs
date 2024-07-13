@@ -6,7 +6,7 @@ using Jatoda.Domain.Core.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Jatoda.Application.Service;
+namespace Jatoda.Application.Services;
 
 public class TokenService(IOptions<TokenOptions> options) : ITokenService
 {

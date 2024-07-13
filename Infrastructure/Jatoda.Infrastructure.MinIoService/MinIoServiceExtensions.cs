@@ -11,7 +11,7 @@ public static class MinIoServiceExtensions
 {
     public static void RegisterMinio(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<MinioOptions>(_ => configuration.GetSection("Minio"));
+        services.Configure<MinioOptions>(configuration.GetSection("minio"));
 
         services.AddSingleton<IMinioClient>(sp =>
         {

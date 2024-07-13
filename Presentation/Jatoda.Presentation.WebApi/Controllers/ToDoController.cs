@@ -105,7 +105,7 @@ public class ToDoController : ControllerBase
     /// <param name="todo">ToDo item data.</param>
     /// <returns>Created ToDo item.</returns>
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] TodoDto todo)
+    public async Task<IActionResult> Add([FromBody] CreateTodoRequestModel todo)
     {
         // if (todo.File is not null)
         // {

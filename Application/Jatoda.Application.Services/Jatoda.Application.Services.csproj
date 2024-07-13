@@ -4,7 +4,6 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>Jatoda.Application.Service</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,11 +18,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Domain\Jatoda.Domain.Core\Jatoda.Domain.Core.csproj"/>
-        <ProjectReference Include="..\..\Domain\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
-        <ProjectReference Include="..\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\..\Domain\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
         <ProjectReference Include="..\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj"/>
     </ItemGroup>

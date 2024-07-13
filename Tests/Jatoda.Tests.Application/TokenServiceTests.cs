@@ -1,4 +1,4 @@
-using Jatoda.Application.Service;
+using Jatoda.Application.Services;
 using Jatoda.Domain.Core.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

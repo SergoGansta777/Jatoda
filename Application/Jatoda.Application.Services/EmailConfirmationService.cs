@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace Jatoda.Application.Service;
+namespace Jatoda.Application.Services;
 
 public class EmailConfirmationService : IEmailConfirmationService
 {
