@@ -13,8 +13,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj"/>
-        <ProjectReference Include="..\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
+        <ProjectReference Include="..\..\Application\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj"/>
+        <ProjectReference Include="..\Jatoda.Infrastructure.CacheService\Jatoda.Infrastructure.CacheService.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Application\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj"/>
         <ProjectReference Include="..\Jatoda.Infrastructure.CacheService\Jatoda.Infrastructure.CacheService.csproj"/>
     </ItemGroup>
 

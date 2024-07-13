@@ -8,16 +8,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="MailKit" Version="4.7.1"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7"/>
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2"/>
         <PackageReference Include="MimeKit" Version="4.7.1"/>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Domain\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
+        <ProjectReference Include="..\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Domain\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
+        <ProjectReference Include="..\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj"/>
     </ItemGroup>
 
 </Project>

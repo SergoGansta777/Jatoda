@@ -12,7 +12,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
+        <ProjectReference Include="..\..\Domain\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
     </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Domain\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
+    </ItemGroup>
+
 
 </Project>

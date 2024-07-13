@@ -2,11 +2,11 @@ using AutoMapper;
 using Jatoda.Application.Core.Models.ModelViews;
 using Jatoda.Domain.Data.DBModels;
 
-namespace Jatoda.Domain.Core.Mappers;
+namespace Jatoda.Application.Core.Mappers;
 
-public class TodonoteToTodonoteViewModel : Profile
+public class TodoToTodoDto : Profile
 {
-    public TodonoteToTodonoteViewModel()
+    public TodoToTodoDto()
     {
         CreateMap<Todo, TodoDto>();
     }

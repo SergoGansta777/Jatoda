@@ -7,7 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
+        <ProjectReference Include="..\..\Domain\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="13.0.1"/>
     </ItemGroup>
 
 </Project>

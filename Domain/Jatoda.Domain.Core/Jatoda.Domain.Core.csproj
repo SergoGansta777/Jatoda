@@ -11,8 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Jatoda.Application.Core\Jatoda.Application.Core.csproj"/>
-        <ProjectReference Include="..\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj"/>
+      <ProjectReference Include="..\..\Application\Jatoda.Application.Core\Jatoda.Application.Core.csproj" />
     </ItemGroup>
 
 </Project>

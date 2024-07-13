@@ -16,8 +16,8 @@
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
         <PackageReference Include="MailKit" Version="4.7.1"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7"/>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.6"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -40,15 +40,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <_ContentIncludedByDefault Remove="Services\LoggerService\nlog.config"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj"/>
-        <ProjectReference Include="..\Jatoda.Application.Services\Jatoda.Application.Services.csproj"/>
-        <ProjectReference Include="..\Jatoda.Domain.Core\Jatoda.Domain.Core.csproj"/>
-        <ProjectReference Include="..\Jatoda.Infrastructure.DataEFCore\Jatoda.Infrastructure.DataEFCore.csproj"/>
-        <ProjectReference Include="..\Jatoda.Infrastructure.MinIoService\Jatoda.Infrastructure.MinIoService.csproj"/>
+        <ProjectReference Include="..\..\Application\Jatoda.Application.Core\Jatoda.Application.Core.csproj"/>
+        <ProjectReference Include="..\..\Application\Jatoda.Application.Services\Jatoda.Application.Services.csproj"/>
+        <ProjectReference Include="..\..\Infrastructure\Jatoda.Infrastructure.CacheService\Jatoda.Infrastructure.CacheService.csproj"/>
+        <ProjectReference Include="..\..\Infrastructure\Jatoda.Infrastructure.DataEFCore\Jatoda.Infrastructure.DataEFCore.csproj"/>
+        <ProjectReference Include="..\..\Infrastructure\Jatoda.Infrastructure.MinIoService\Jatoda.Infrastructure.MinIoService.csproj"/>
     </ItemGroup>
 
 </Project>
