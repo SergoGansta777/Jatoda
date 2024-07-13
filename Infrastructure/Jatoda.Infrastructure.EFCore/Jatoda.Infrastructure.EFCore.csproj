@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.7"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Application\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj"/>
+        <ProjectReference Include="..\Jatoda.Infrastructure.CacheService\Jatoda.Infrastructure.CacheService.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Application\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj"/>
+        <ProjectReference Include="..\Jatoda.Infrastructure.CacheService\Jatoda.Infrastructure.CacheService.csproj"/>
+    </ItemGroup>
+
+</Project>
