@@ -15,7 +15,7 @@ public static class ServicesExtensions
         services.Configure<EmailConfirmationOptions>(configuration.GetSection("email-confirmation"));
         services.Configure<TokenOptions>(configuration.GetSection("jwt"));
 
-        services.AddSingleton<IEmailConfirmationService, EmailConfirmationService>();
+        services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
         services.AddSingleton<ITokenService, TokenService>();
     }
 
