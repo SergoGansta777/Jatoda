@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Jatoda.Application.Interfaces;
-using Jatoda.Application.Service.Options;
+using Jatoda.Domain.Data.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -110,6 +110,12 @@ public class TokenService(IOptions<TokenOptions> options) : ITokenService
         {
             throw new SecurityTokenException("Token validation failed.", ex);
         }
+    }
+
+    public string GetUserIdFromToken(string token)
+    {
+        var jwtToken = ValidateToken(token);
+        return jwtToken.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
     }
 
     public void RevokeToken(string? token)

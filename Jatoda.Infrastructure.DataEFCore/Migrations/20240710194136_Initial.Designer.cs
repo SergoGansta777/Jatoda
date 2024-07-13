@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Jatoda.Infrastructure.DataEFCore.Migrations
 {
     [DbContext(typeof(JatodaContext))]
-    [Migration("20240710184818_Initial")]
+    [Migration("20240710194136_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -33,6 +33,9 @@ namespace Jatoda.Infrastructure.DataEFCore.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AttachedTodoId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -51,10 +54,7 @@ namespace Jatoda.Infrastructure.DataEFCore.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("TodoId")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("TodoId1")
+                    b.Property<Guid>("TodoId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("UpdateDate")
@@ -62,7 +62,7 @@ namespace Jatoda.Infrastructure.DataEFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TodoId1");
+                    b.HasIndex("TodoId");
 
                     b.ToTable("FileMetadata");
                 });
@@ -168,6 +168,9 @@ namespace Jatoda.Infrastructure.DataEFCore.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsEmailConfirmed")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -219,7 +222,7 @@ namespace Jatoda.Infrastructure.DataEFCore.Migrations
                 {
                     b.HasOne("Jatoda.Domain.Data.DBModels.Todo", "Todo")
                         .WithMany("FileMetadata")
-                        .HasForeignKey("TodoId1")
+                        .HasForeignKey("TodoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

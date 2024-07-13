@@ -1,6 +1,6 @@
 namespace Jatoda.Application.Core.Models.ModelViews;
 
-public class LoginRequestModelView
+public class LoginRequestModel
 {
     public string? Username { get; set; }
     public string? Password { get; set; }

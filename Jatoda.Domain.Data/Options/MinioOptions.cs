@@ -1,4 +1,4 @@
-namespace Jatoda.Infrastructure.MinIoService.Options;
+namespace Jatoda.Domain.Data.Options;
 
 public class MinioOptions
 {

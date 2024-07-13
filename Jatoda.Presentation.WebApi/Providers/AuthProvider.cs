@@ -1,39 +1,48 @@
+using System.Security.Claims;
 using Jatoda.Application.Core.Models.ModelViews;
+using Jatoda.Application.Core.Models.ResponseModels;
 using Jatoda.Application.Interfaces;
 using Jatoda.Domain.Data.DBModels;
 using Jatoda.Providers.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace Jatoda.Providers;
 
 public class AuthProvider : IAuthProvider
 {
+    private readonly IEmailConfirmationService _emailConfirmationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<AuthProvider> _logger;
     private readonly ITokenService _tokenService;
     private readonly IUserProvider<User> _userProvider;
 
-    public AuthProvider(IUserProvider<User> userProvider, ITokenService tokenService, ILogger<AuthProvider> logger,
-        IHttpContextAccessor httpContextAccessor)
+    public AuthProvider(
+        IUserProvider<User> userProvider,
+        ITokenService tokenService,
+        ILogger<AuthProvider> logger,
+        IHttpContextAccessor httpContextAccessor,
+        IEmailConfirmationService emailConfirmationService)
     {
         _userProvider = userProvider;
         _tokenService = tokenService;
         _logger = logger;
         _httpContextAccessor = httpContextAccessor;
+        _emailConfirmationService = emailConfirmationService;
     }
 
-    public async Task<IActionResult> Login(LoginRequestModelView? model)
+    public async Task<AuthResponseModel> Login(LoginRequestModel? model)
     {
         if (IsInvalidLoginRequest(model))
         {
-            return HandleInvalidLoginRequest();
+            return new AuthResponseModel
+                {Success = false, Message = "Invalid payload. Username and Password should not be empty."};
         }
 
         var user = await _userProvider.GetByUsernameAsync(model.Username);
         if (!IsValidUser(user, model.Password))
         {
-            return HandleInvalidCredentials();
+            return new AuthResponseModel
+                {Success = false, Message = "Invalid credentials. Please check your username and password."};
         }
 
         var token = _tokenService.GenerateToken(user?.Id.ToString(), user?.Username);
@@ -41,90 +50,94 @@ public class AuthProvider : IAuthProvider
 
         _logger.LogInformation("User {Username} logged in successfully.", user.Username);
 
-        return new OkObjectResult(new {message = "Login successful", username = user.Username, token = token});
+        return new AuthResponseModel {Success = true, Message = "Login successful", User = user, Token = token};
     }
 
-    public IActionResult Logout()
+    public LogoutResponseModel Logout()
     {
         if (_httpContextAccessor.HttpContext != null &&
             _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("jwt", out var token))
         {
             RevokeUserToken(token);
             _logger.LogInformation("User with token {token} logged out.", token);
-            return new OkResult();
+            return new LogoutResponseModel {Success = true, Message = "Logout successful."};
         }
 
         _logger.LogWarning("No jwt cookie found.");
-        return new BadRequestObjectResult("No jwt cookie found.");
+        return new LogoutResponseModel {Success = false, Message = "No jwt cookie found."};
     }
 
-    public async Task<IActionResult> Register(RegisterRequestModelView? model)
+    public async Task<AuthResponseModel> Register(RegisterRequestModel? model)
     {
         if (IsInvalidRegistrationRequest(model))
         {
-            return HandleInvalidRegistrationPayload();
+            return new AuthResponseModel {Success = false, Message = "Invalid payload."};
         }
 
         if (await IsUsernameTaken(model!.Username))
         {
-            return HandleUsernameAlreadyTaken();
+            return new AuthResponseModel {Success = false, Message = "Username is already taken"};
         }
 
         if (await IsEmailTaken(model.Email))
         {
-            return HandleEmailAlreadyInUse();
+            return new AuthResponseModel {Success = false, Message = "Email is already in use"};
         }
 
         var createdUser = await CreateUser(model);
         _logger.LogInformation("User {Username} registered successfully.", createdUser.Username);
 
-        return new CreatedAtActionResult(nameof(Register), "Auth", new {id = createdUser.Id}, createdUser);
+        await _emailConfirmationService.SendVerificationEmail(createdUser);
+
+        return new AuthResponseModel {Success = true, Message = "User registered successfully.", User = createdUser};
     }
 
-    public async Task<IActionResult> GetUserByToken()
+    public async Task<AuthResponseModel> GetUserByToken()
     {
         try
         {
             var jwt = _httpContextAccessor.HttpContext?.Request.Cookies["jwt"];
             if (jwt is null)
             {
-                return new UnauthorizedResult();
+                return new AuthResponseModel {Success = false, Message = "Unauthorized"};
             }
 
             var token = _tokenService.ValidateToken(jwt);
-            var userId = Guid.Parse(token.Payload.First(c => c.Key == "nameid").Value.ToString()!);
+            var userId = Guid.Parse(token.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
             var user = await _userProvider.GetByIdAsync(userId);
-            return new OkObjectResult(user);
+            return new AuthResponseModel {Success = true, Message = "User retrieved successfully.", User = user};
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while fetching user.");
-            return new UnauthorizedResult();
+            return new AuthResponseModel {Success = false, Message = "Unauthorized"};
         }
     }
 
-    private static bool IsInvalidLoginRequest(LoginRequestModelView? model)
+    public async Task<AuthResponseModel> ConfirmEmail(string token)
     {
-        return model is null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password);
+        var result = new AuthResponseModel();
+        var isValid = await _emailConfirmationService.ConfirmEmail(token);
+        if (!isValid)
+        {
+            result.Success = false;
+            result.Message = "Invalid or expired token.";
+            return result;
+        }
+
+        result.Success = true;
+        result.Message = "Email confirmed successfully.";
+        return result;
     }
 
-    private IActionResult HandleInvalidLoginRequest()
+    private static bool IsInvalidLoginRequest(LoginRequestModel? model)
     {
-        const string errorMessage = "Invalid payload. Username and Password should not be empty.";
-        _logger.LogWarning(errorMessage);
-        return new BadRequestObjectResult(errorMessage);
+        return model is null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password);
     }
 
     private static bool IsValidUser(User? user, string? password)
     {
         return user is not null && BCryptNet.Verify(password, user.PasswordHash);
-    }
-
-    private BadRequestObjectResult HandleInvalidCredentials()
-    {
-        const string errorMessage = "Invalid credentials. Please check your username and password.";
-        _logger.LogWarning(errorMessage);
-        return new BadRequestObjectResult(errorMessage);
     }
 
     private void SetAuthCookie(string token)
@@ -139,17 +152,10 @@ public class AuthProvider : IAuthProvider
         _httpContextAccessor.HttpContext?.Response.Cookies.Delete("jwt");
     }
 
-    private static bool IsInvalidRegistrationRequest(RegisterRequestModelView? model)
+    private static bool IsInvalidRegistrationRequest(RegisterRequestModel? model)
     {
         return model is null || string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Email) ||
                string.IsNullOrWhiteSpace(model.Password);
-    }
-
-    private IActionResult HandleInvalidRegistrationPayload()
-    {
-        const string errorMessage = "Invalid registration payload.";
-        _logger.LogWarning(errorMessage);
-        return new BadRequestObjectResult("Invalid payload.");
     }
 
     private async Task<bool> IsUsernameTaken(string? username)
@@ -157,28 +163,12 @@ public class AuthProvider : IAuthProvider
         return await _userProvider.GetByUsernameAsync(username) is not null;
     }
 
-    private BadRequestObjectResult HandleUsernameAlreadyTaken()
-    {
-        const string errorMessage = "Username is already taken";
-        _logger.LogWarning(errorMessage);
-
-        return new BadRequestObjectResult(errorMessage);
-    }
-
     private async Task<bool> IsEmailTaken(string? email)
     {
         return await _userProvider.GetByEmailAsync(email) is not null;
     }
 
-    private BadRequestObjectResult HandleEmailAlreadyInUse()
-    {
-        const string errorMessage = "Email is already in use";
-        _logger.LogWarning(errorMessage);
-
-        return new BadRequestObjectResult(errorMessage);
-    }
-
-    private async Task<User> CreateUser(RegisterRequestModelView model)
+    private async Task<User> CreateUser(RegisterRequestModel model)
     {
         var passwordHash = BCryptNet.HashPassword(model.Password);
         var user = new User
@@ -188,6 +178,7 @@ public class AuthProvider : IAuthProvider
             Email = model.Email
         };
 
-        return await _userProvider.AddUserAsync(user);
+        await _userProvider.CreateAsync(user);
+        return user;
     }
 }

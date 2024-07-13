@@ -59,7 +59,8 @@ namespace Jatoda.Infrastructure.DataEFCore.Migrations
                     Email = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdateDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    UpdateDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsEmailConfirmed = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -121,21 +122,21 @@ namespace Jatoda.Infrastructure.DataEFCore.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TodoId = table.Column<int>(type: "integer", nullable: false),
+                    AttachedTodoId = table.Column<int>(type: "integer", nullable: false),
                     Filename = table.Column<string>(type: "text", nullable: false),
                     Filetype = table.Column<string>(type: "text", nullable: false),
                     Filesize = table.Column<long>(type: "bigint", nullable: false),
                     Filepath = table.Column<string>(type: "text", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdateDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TodoId1 = table.Column<Guid>(type: "uuid", nullable: false)
+                    TodoId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FileMetadata", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FileMetadata_Todos_TodoId1",
-                        column: x => x.TodoId1,
+                        name: "FK_FileMetadata_Todos_TodoId",
+                        column: x => x.TodoId,
                         principalTable: "Todos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -166,9 +167,9 @@ namespace Jatoda.Infrastructure.DataEFCore.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_FileMetadata_TodoId1",
+                name: "IX_FileMetadata_TodoId",
                 table: "FileMetadata",
-                column: "TodoId1");
+                column: "TodoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleUser_UsersId",
