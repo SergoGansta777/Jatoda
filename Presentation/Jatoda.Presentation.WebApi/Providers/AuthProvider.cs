@@ -1,8 +1,8 @@
 using System.Security.Claims;
-using Jatoda.Application.Core.Models.ModelViews;
+using Jatoda.Application.Core.Models.RequestModels;
 using Jatoda.Application.Core.Models.ResponseModels;
 using Jatoda.Application.Interfaces;
-using Jatoda.Domain.Core.DBModels;
+using Jatoda.Domain.Data.DBModels;
 using Jatoda.Providers.Interfaces;
 using BCryptNet = BCrypt.Net.BCrypt;
 

@@ -1,7 +1,8 @@
 using AutoMapper;
-using Jatoda.Application.Core.Models.ModelViews;
-using Jatoda.Domain.Core.DBModels;
+using Jatoda.Application.Core.Models.Dtos;
+using Jatoda.Application.Core.Models.RequestModels;
 using Jatoda.Domain.Core.Exceptions;
+using Jatoda.Domain.Data.DBModels;
 using Jatoda.Providers.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

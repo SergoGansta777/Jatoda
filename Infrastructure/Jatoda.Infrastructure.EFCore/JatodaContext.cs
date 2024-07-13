@@ -1,4 +1,4 @@
-﻿using Jatoda.Domain.Core.DBModels;
+﻿using Jatoda.Domain.Data.DBModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jatoda.Infrastructure.EFCore;

@@ -1,4 +1,4 @@
-﻿namespace Jatoda.Domain.Core.DBModels;
+﻿namespace Jatoda.Domain.Data.DBModels;
 
 public class FileMetadata
 {

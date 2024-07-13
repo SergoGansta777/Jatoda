@@ -1,4 +1,4 @@
-namespace Jatoda.Application.Core.Models.ModelViews;
+namespace Jatoda.Application.Core.Models.Dtos;
 
 public class TodoDto
 {

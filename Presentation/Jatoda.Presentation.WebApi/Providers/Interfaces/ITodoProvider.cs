@@ -1,4 +1,4 @@
-using Jatoda.Domain.Core.DBModels;
+using Jatoda.Domain.Data.DBModels;
 
 namespace Jatoda.Providers.Interfaces;
 

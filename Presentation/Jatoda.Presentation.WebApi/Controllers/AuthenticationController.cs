@@ -1,4 +1,4 @@
-using Jatoda.Application.Core.Models.ModelViews;
+using Jatoda.Application.Core.Models.RequestModels;
 using Jatoda.Providers.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

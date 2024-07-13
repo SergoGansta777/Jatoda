@@ -1,4 +1,4 @@
-namespace Jatoda.Application.Core.Models.ModelViews;
+namespace Jatoda.Application.Core.Models.RequestModels;
 
 public class LoginRequestModel
 {

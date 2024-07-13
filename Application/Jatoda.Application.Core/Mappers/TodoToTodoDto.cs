@@ -1,6 +1,6 @@
 using AutoMapper;
-using Jatoda.Application.Core.Models.ModelViews;
-using Jatoda.Domain.Core.DBModels;
+using Jatoda.Application.Core.Models.Dtos;
+using Jatoda.Domain.Data.DBModels;
 
 namespace Jatoda.Application.Core.Mappers;
 

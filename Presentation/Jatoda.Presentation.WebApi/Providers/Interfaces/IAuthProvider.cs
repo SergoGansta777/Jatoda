@@ -1,4 +1,4 @@
-using Jatoda.Application.Core.Models.ModelViews;
+using Jatoda.Application.Core.Models.RequestModels;
 using Jatoda.Application.Core.Models.ResponseModels;
 
 namespace Jatoda.Providers.Interfaces;

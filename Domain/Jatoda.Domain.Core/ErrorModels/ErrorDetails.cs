@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Jatoda.Domain.Data.ErrorModels;
+namespace Jatoda.Domain.Core.ErrorModels;
 
 public class ErrorDetails
 {
