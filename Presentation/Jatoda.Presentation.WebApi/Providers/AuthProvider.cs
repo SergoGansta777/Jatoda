@@ -114,7 +114,7 @@ public class AuthProvider : IAuthProvider
         }
     }
 
-    public async Task<AuthResponseModel> ConfirmEmail(string token)
+    public async Task<AuthResponseModel> ConfirmEmail(string? token)
     {
         var result = new AuthResponseModel();
         var isValid = await _emailConfirmationService.ConfirmEmail(token);
@@ -140,7 +140,7 @@ public class AuthProvider : IAuthProvider
         return user is not null && BCryptNet.Verify(password, user.PasswordHash);
     }
 
-    private void SetAuthCookie(string token)
+    private void SetAuthCookie(string? token)
     {
         var cookieOptions = new CookieOptions {HttpOnly = true};
         _httpContextAccessor.HttpContext?.Response.Cookies.Append("jwt", token, cookieOptions);

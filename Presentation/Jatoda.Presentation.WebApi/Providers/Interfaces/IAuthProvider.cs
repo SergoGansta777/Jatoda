@@ -9,5 +9,5 @@ public interface IAuthProvider
     LogoutResponseModel Logout();
     Task<AuthResponseModel> Register(RegisterRequestModel? model);
     Task<AuthResponseModel> GetUserByToken();
-    Task<AuthResponseModel> ConfirmEmail(string token);
+    Task<AuthResponseModel> ConfirmEmail(string? token);
 }

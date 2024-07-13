@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{B02226B5-BEBF-482F-83CB-CC11FE0919D8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{06F14C9F-C9E2-42AC-A9C1-ACDFC9CC5886}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Application.Core", "Application\Jatoda.Application.Core\Jatoda.Application.Core.csproj", "{914B5690-7756-4CB2-B074-060E11F1C6EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Domain.Data", "Domain\Jatoda.Domain.Data\Jatoda.Domain.Data.csproj", "{F373EC48-AA32-44E3-997F-E121CDC423CA}"
@@ -27,6 +25,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Application.Interfaces", "Application\Jatoda.Application.Interfaces\Jatoda.Application.Interfaces.csproj", "{3626A85A-4718-4317-BF65-BBEDA507CC68}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Domain.Core", "Domain\Jatoda.Domain.Core\Jatoda.Domain.Core.csproj", "{D953C0CF-704F-483D-B584-6F22E608F244}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{49BA2FBF-7A37-4B44-BBC2-E34C386A0F49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jatoda.Tests.Application", "Tests\Jatoda.Tests.Application\Jatoda.Tests.Application.csproj", "{859313C3-29FD-4E89-AFC7-B13D58EB8F66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,6 +72,10 @@ Global
 		{D953C0CF-704F-483D-B584-6F22E608F244}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D953C0CF-704F-483D-B584-6F22E608F244}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D953C0CF-704F-483D-B584-6F22E608F244}.Release|Any CPU.Build.0 = Release|Any CPU
+		{859313C3-29FD-4E89-AFC7-B13D58EB8F66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{859313C3-29FD-4E89-AFC7-B13D58EB8F66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{859313C3-29FD-4E89-AFC7-B13D58EB8F66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{859313C3-29FD-4E89-AFC7-B13D58EB8F66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{914B5690-7756-4CB2-B074-060E11F1C6EC} = {6321B1F3-359C-4BEA-9A9B-4101C1633790}
@@ -81,5 +87,6 @@ Global
 		{69D95177-A11B-4B35-92C1-C08717101D6B} = {6321B1F3-359C-4BEA-9A9B-4101C1633790}
 		{3626A85A-4718-4317-BF65-BBEDA507CC68} = {6321B1F3-359C-4BEA-9A9B-4101C1633790}
 		{D953C0CF-704F-483D-B584-6F22E608F244} = {842897A2-C6AB-4366-B0CA-2A48D45B7C18}
+		{859313C3-29FD-4E89-AFC7-B13D58EB8F66} = {49BA2FBF-7A37-4B44-BBC2-E34C386A0F49}
 	EndGlobalSection
 EndGlobal

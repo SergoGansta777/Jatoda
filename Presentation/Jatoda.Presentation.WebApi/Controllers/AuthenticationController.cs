@@ -96,7 +96,7 @@ public class AuthController(IAuthProvider authProvider) : ControllerBase
     /// <response code="200">Returns a success message if email confirmation is successful.</response>
     /// <response code="400">Returns an error message if the token is invalid or expired.</response>
     [HttpGet("confirm-email")]
-    public async Task<IActionResult> ConfirmEmail([FromQuery] string token)
+    public async Task<IActionResult> ConfirmEmail([FromQuery] string? token)
     {
         var result = await authProvider.ConfirmEmail(token);
         if (!result.Success)

@@ -13,46 +13,39 @@ public class TokenService(IOptions<TokenOptions> options) : ITokenService
     private readonly TokenOptions _options = options.Value;
     private readonly List<string?> _revokedToken = [];
 
-    public string GenerateToken(string? userId, string? username)
+    public string? GenerateToken(string? userId, string? username)
     {
-        try
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenExpiryTime = _options.TokenExpiry;
-            var secretKey = _options.SecretKey;
-            if (string.IsNullOrEmpty(secretKey))
-            {
-                throw new InvalidOperationException("Secret key must be provided.");
-            }
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenExpiryTime = _options.TokenExpiryInDays;
+        var secretKey = _options.SecretKey;
 
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(username))
-            {
-                throw new ArgumentException("Empty user id or username");
-            }
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(
-                    new[]
-                    {
-                        new Claim(ClaimTypes.NameIdentifier, userId),
-                        new Claim(ClaimTypes.Name, username)
-                    }
-                ),
-                Expires = DateTime.UtcNow.AddDays(tokenExpiryTime),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-                    SecurityAlgorithms.HmacSha256Signature
-                )
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
-        catch (Exception ex)
+        if (string.IsNullOrEmpty(secretKey))
         {
-            Console.WriteLine(ex.Message);
-            return string.Empty;
+            throw new InvalidOperationException("Secret key must be provided.");
         }
+
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(username))
+        {
+            throw new ArgumentException("Empty user id or username");
+        }
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(
+                new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userId),
+                    new Claim(ClaimTypes.Name, username)
+                }
+            ),
+            Expires = DateTime.UtcNow.AddDays(tokenExpiryTime),
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                SecurityAlgorithms.HmacSha256Signature
+            )
+        };
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
     }
 
     public JwtSecurityToken ValidateToken(string? token)
@@ -112,10 +105,10 @@ public class TokenService(IOptions<TokenOptions> options) : ITokenService
         }
     }
 
-    public string GetUserIdFromToken(string token)
+    public string GetUserIdFromToken(string? token)
     {
         var jwtToken = ValidateToken(token);
-        return jwtToken.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        return jwtToken.Claims.First(c => c.Type == "nameid").Value;
     }
 
     public void RevokeToken(string? token)

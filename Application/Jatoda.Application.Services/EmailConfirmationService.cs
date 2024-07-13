@@ -50,7 +50,7 @@ public class EmailConfirmationService : IEmailConfirmationService
         await client.DisconnectAsync(true);
     }
 
-    public async Task<bool> ConfirmEmail(string token)
+    public async Task<bool> ConfirmEmail(string? token)
     {
         _tokenService.ValidateToken(token);
 
