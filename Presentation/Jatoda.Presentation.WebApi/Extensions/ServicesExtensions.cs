@@ -10,6 +10,7 @@ using Jatoda.Providers;
 using Jatoda.Providers.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 namespace Jatoda.Extensions;
 
@@ -18,6 +19,7 @@ public static class ServicesExtensions
     public static void RegisterServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.RegisterOptions();
+        services.RegisterSerilogLogging(configuration);
 
         services.RegisterDatabase(configuration);
         services.RegisterCacheService(configuration);
@@ -41,6 +43,12 @@ public static class ServicesExtensions
         services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
         services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
         services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+    }
+
+
+    private static void RegisterSerilogLogging(this IServiceCollection services, IConfiguration configuration)
+    {
+        Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
     }
 
     private static void RegisterRateLimiting(this IServiceCollection services, IConfiguration configuration)
